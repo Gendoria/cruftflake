@@ -33,7 +33,16 @@ and need to be manually pruned.
 
 ## Running
 
-Git clone and then remember to `git submodule init`. You should run the tests
+Installation via composer:
+	
+	{
+    	"minimum-stability": "dev",
+    	"require": {
+	        "posmena/cruftflake": "*"
+		}
+	}
+
+Or via git: Git clone and then remember to `git submodule init`. You should run the tests
 to verify things are OK:
 
     phpunit --bootstrap test/bootstrap.php test/
@@ -47,3 +56,10 @@ There are two scripts provided for playing about with.
 2. A client that will generate N IDs and dump to STDOUT
 
     ./scripts/client.php -n 100
+
+## Dependencies*
+
+* ZeroMQ
+* ZooKeeper
+
+*sadly these cannot be added to composer just yet!
