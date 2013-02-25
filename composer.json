@@ -2,7 +2,7 @@
     "name": "posmena/cruftflake",
     "type": "application",
     "description": "CruftFlake - a stab at a version of Twitter Snowflake but in PHP with a simple ZeroMQ interface.",
-    "keywords": ["cruftflake,snowflake"],
+    "keywords": ["cruftflake"],
     "homepage": "https://github.com/davegardnerisme/cruftflake",
     "version": "1.0.0",
     "license": "MIT",
