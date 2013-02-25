@@ -10,22 +10,18 @@
  *  -m      Specify a particular machine ID
  */
 
-$opts = getopt('p:z:m:');
-$port = isset($opts['p']) ? $opts['p'] : 5599;
-$zks = isset($opts['z']) ? $opts['z'] : 'localhost:2181';
-$machine = isset($opts['m']) ? $opts['m'] : NULL;
+$opts    = getopt('p:z:m:');
+$port    = isset($opts['p']) ? $opts['p'] : 5599;
+$zks     = isset($opts['z']) ? $opts['z'] : '127.0.0.1:2181';
+$machine = isset($opts['m']) ? $opts['m'] : uniqid();
 
-// include the pure-php class loader, if not already exists (eg: via binary)
-if (!class_exists('\SplClassLoader')) {
-    include dirname(__FILE__)
-            . '/../dependencies/spl-class-loader/SplClassLoader.php';
-}
-// autoload
-$classLoader = new \SplClassLoader(
-        'Davegardnerisme\CruftFlake',
-        dirname(__FILE__) . '/../src/'
-        );
-$classLoader->register();
+// Autoload the class
+spl_autoload_register(function ($class) {
+    $filename = strtolower(__DIR__ . '/../src/' .  str_replace('\\', '/', $class) . '.php');
+	if (file_exists($filename)) {
+		require $filename;
+	}
+});
 
 $timer = new \Davegardnerisme\CruftFlake\Timer;
 if ($machine !== NULL) {

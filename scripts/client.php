@@ -16,7 +16,7 @@ $port = isset($opts['p']) ? $opts['p'] : 5599;
 
 $context = new \ZMQContext();
 $socket = new \ZMQSocket($context, \ZMQ::SOCKET_REQ);
-$socket->connect("tcp://localhost:{$port}");
+$socket->connect("tcp://127.0.0.1:{$port}");
 $socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);
 
 for ($i=0; $i<$n; $i++) {
