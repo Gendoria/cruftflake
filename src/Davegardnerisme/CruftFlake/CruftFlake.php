@@ -1,24 +1,29 @@
 <?php
+/**
+ * Class to implement CruftFlake
+ *
+ * @author @bobbyjason
+ */
 
 namespace Davegardnerisme\CruftFlake;
 
 class CruftFlake
 {
-	protected $_context;
-	protected $_socket;
+	protected $context;
+	protected $socket;
 
 	public function __construct(\ZMQContext $context, \ZMQSocket $socket)
 	{
-		$this->_context = $context;
-		$this->_socket  = $socket;
+		$this->context = $context;
+		$this->socket  = $socket;
 	}
 
 	public function generateId()
 	{
-		$this->_socket->connect("tcp://127.0.0.1:5599");
-        $this->_socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);   
-		$this->_socket->send('GEN');
-		$id = $this->_socket->recv();
+		$this->socket->connect("tcp://127.0.0.1:5599");
+		$this->socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);
+		$this->socket->send('GEN');
+		$id = $this->socket->recv();
 
 		return $id;
 	}
