@@ -32,4 +32,8 @@ class CruftFlake
 	{
 		return $this->generateId();
 	}
+
+	public function setTimeout($timeout = -1) {
+		$this->socket->setSockOpt(\ZMQ::SOCKOPT_SNDTIMEO, 5);
+	}
 }
