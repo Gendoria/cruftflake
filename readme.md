@@ -44,7 +44,7 @@ Installation via composer:
 
 You should run the tests to verify things are OK:
 
-    phpunit --bootstrap test/bootstrap.php test/
+    ./vendor/bin/phpunit vendor/posmena/cruftflake/test/
 
 There are two scripts provided for playing about with.
 
