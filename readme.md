@@ -14,7 +14,7 @@ The implementation copies Twitter - generating 64 bit IDs.
   - configured machine ID - 10 bits
   - sequence number - 12 bits
 
-Has a custom epoch that means it can generate IDs until 2081-09-06 (not the 
+Has a custom epoch that means it can generate IDs until 2081-09-06 (not the
 same epoch as Snowflake).
 
 ### ZooKeeper for config coordination
@@ -34,7 +34,7 @@ and need to be manually pruned.
 ## Running
 
 Installation via composer:
-	
+
 	{
     	"minimum-stability": "dev",
     	"require": {
@@ -42,8 +42,7 @@ Installation via composer:
 		}
 	}
 
-Or via git: Git clone and then remember to `git submodule init`. You should run the tests
-to verify things are OK:
+You should run the tests to verify things are OK:
 
     phpunit --bootstrap test/bootstrap.php test/
 
