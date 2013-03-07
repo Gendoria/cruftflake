@@ -13,7 +13,7 @@
 $opts    = getopt('p:z:m:');
 $port    = isset($opts['p']) ? $opts['p'] : 5599;
 $zks     = isset($opts['z']) ? $opts['z'] : '127.0.0.1:2181';
-$machine = isset($opts['m']) ? $opts['m'] : rand(0,1023);
+$machine = isset($opts['m']) ? $opts['m'] : null;
 
 // Autoload the class
 spl_autoload_register(function ($class) {
