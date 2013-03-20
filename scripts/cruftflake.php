@@ -17,7 +17,7 @@ $machine = isset($opts['m']) ? $opts['m'] : null;
 
 // Autoload the class
 spl_autoload_register(function ($class) {
-    $filename = strtolower(__DIR__ . '/../src/' .  str_replace('\\', '/', $class) . '.php');
+    $filename = __DIR__ . '/../src/' .  str_replace('\\', '/', $class) . '.php';
 	if (file_exists($filename)) {
 		require $filename;
 	}
