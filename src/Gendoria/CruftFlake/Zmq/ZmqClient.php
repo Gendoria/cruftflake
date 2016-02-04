@@ -16,11 +16,13 @@ class ZmqClient implements ClientInterface
 {
     protected $context;
     protected $socket;
+    protected $bindUri;
 
-    public function __construct(\ZMQContext $context, \ZMQSocket $socket)
+    public function __construct(\ZMQContext $context, \ZMQSocket $socket, $bindUri = 'tcp://127.0.0.1:5599')
     {
         $this->context = $context;
         $this->socket = $socket;
+        $this->bindUri = $bindUri;
     }
 
     /**
@@ -30,7 +32,7 @@ class ZmqClient implements ClientInterface
      */
     public function generateId()
     {
-        $this->socket->connect('tcp://127.0.0.1:5599');
+        $this->socket->connect($this->bindUri);
         $this->socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);
         $this->socket->send('GEN');
         $reply = $this->socket->recv();
@@ -51,7 +53,7 @@ class ZmqClient implements ClientInterface
      */
     public function status()
     {
-        $this->socket->connect('tcp://127.0.0.1:5599');
+        $this->socket->connect($this->bindUri);
         $this->socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);
         $this->socket->send('STATUS');
         $reply = $this->socket->recv();
