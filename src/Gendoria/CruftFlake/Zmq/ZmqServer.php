@@ -117,8 +117,8 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     /**
      * Prepare response.
      * 
-     * @param string $message
-     * @param int    $code
+     * @param mixed $message Return message. Anything, which is JSON serializable.
+     * @param int   $code    Response code.
      * 
      * @return array
      */
