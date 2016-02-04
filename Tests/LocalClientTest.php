@@ -31,7 +31,7 @@ class LocalClientTest extends PHPUnit_Framework_TestCase
         $timer = $this->getMockBuilder('\Gendoria\CruftFlake\Timer\TimerInterface')
                             ->disableOriginalConstructor()
                             ->getMock();
-        $timer->expects($this->once())
+        $timer->expects($this->any())
                     ->method('getUnixTimestamp')
                     ->will($this->returnValue(1341246960000));
         $config = new FixedConfig(1);
