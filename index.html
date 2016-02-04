@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Cruftflake by Gendoria</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Cruftflake</h1>
+        <h2>ID generator</h2>
+        <a href="https://github.com/Gendoria/cruftflake" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="cruftflake" class="anchor" href="#cruftflake" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CruftFlake</h1>
+
+<p><a href="https://travis-ci.org/Gendoria/cruftflake"><img src="https://img.shields.io/travis/Gendoria/cruftflake/master.svg" alt="Build Status"></a>
+<a href="https://scrutinizer-ci.com/g/Gendoria/cruftflake/?branch=master"><img src="https://img.shields.io/scrutinizer/g/Gendoria/cruftflake.svg" alt="Scrutinizer Code Quality"></a>
+<a href="https://scrutinizer-ci.com/g/Gendoria/cruftflake/?branch=master"><img src="https://img.shields.io/scrutinizer/coverage/g/Gendoria/cruftflake.svg" alt="Code Coverage"></a></p>
+
+<p>A stab at a version of <a href="https://github.com/twitter/snowflake">Twitter Snowflake</a>
+but in PHP with a simple ZeroMQ interface (rather than Thrift).</p>
+
+<p>This is a serous rewrite of <a href="https://github.com/dvomedia/cruftflake">https://github.com/dvomedia/cruftflake</a>.
+It organizes the code in modules and adds several interfaces, allowing easier extension
+of other server mechanisms.</p>
+
+<h2>
+<a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Implementation</h2>
+
+<p>This project was motivated by personal curiosity and also my <a href="https://github.com/twitter/snowflake/issues/8">inability to
+get Twitter's project to build</a>.</p>
+
+<p>The implementation copies Twitter - generating 64 bit IDs.</p>
+
+<ul>
+<li>time - 41 bits</li>
+<li>configured machine ID - 10 bits</li>
+<li>sequence number - 12 bits</li>
+</ul>
+
+<p>Has a custom epoch that means it can generate IDs until 2081-09-06 (not the
+same epoch as Snowflake).</p>
+
+<h3>
+<a id="zookeeper-for-config-coordination" class="anchor" href="#zookeeper-for-config-coordination" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ZooKeeper for config coordination</h3>
+
+<p>We use ZooKeeper to store which machine IDs are in use. When a new node starts
+up for the first time it <strong>must</strong> be able to contact the ZooKeeper cluster
+and create a new node. It will look at all the existing nodes and then (if it
+can't find its own Mac Address) attempt to claim a free one.</p>
+
+<p>I was using Ephemeral nodes for this - similar(ish) to a lock pattern but this
+had the issue that the node needed to remain connected to ZK throughout its
+lifetime -- this way it doesn't.</p>
+
+<p>The downside is that potentially the 1024 possible machine IDs will "fill up"
+and need to be manually pruned.</p>
+
+<h2>
+<a id="running" class="anchor" href="#running" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running</h2>
+
+<p>Installation via composer:</p>
+
+<div class="highlight highlight-source-json"><pre>    {
+        <span class="pl-s"><span class="pl-pds">"</span>require<span class="pl-pds">"</span></span>: {
+            <span class="pl-s"><span class="pl-pds">"</span>gendoria/cruftflake<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>
+        }
+    }</pre></div>
+
+<p>There are several example scripts provided for playing about with.
+Both require previous composer update.</p>
+
+<ol>
+<li>
+<p>The generator (the server)</p>
+
+<div class="highlight highlight-source-shell"><pre>    ./examples/server.php</pre></div>
+</li>
+<li>
+<p>A client, that will generate N IDs and dump to STDOUT</p>
+
+<div class="highlight highlight-source-shell"><pre>./examples/client.php -n 100</pre></div>
+</li>
+<li>
+<p>A client, that will ask server for generator status</p>
+
+<div class="highlight highlight-source-shell"><pre>./examples/status.php</pre></div>
+</li>
+</ol>
+
+<p>For client examples to work, server example has to be be running.</p>
+
+<h2>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<ul>
+<li>ZeroMQ</li>
+<li>ZooKeeper (if you want to use centralized configuration)</li>
+</ul>
+
+<p>Composer requires php-zmq module installed, but currently does not require zookeper.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/Gendoria/cruftflake/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/Gendoria/cruftflake/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/Gendoria/cruftflake"></a> is maintained by <a href="https://github.com/Gendoria">Gendoria</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
