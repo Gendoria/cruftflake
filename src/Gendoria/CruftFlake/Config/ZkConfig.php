@@ -105,9 +105,6 @@ class ZkConfig implements ConfigInterface
                     "Cannot locate and claim a free machine ID via ZK"
                     );
         }
-
-        echo "Claimed machine ID {$machineId} for " . json_encode($machineInfo) . "\n";
-
         return (int)$machineId;
     }
 

@@ -37,8 +37,6 @@ class FixedConfig implements ConfigInterface
      */
     public function getMachine()
     {
-        echo "Claimed machine ID {$this->machineId} via fixed configuration.\n";
-
         return $this->machineId;
     }
 }

@@ -7,7 +7,7 @@
 
 namespace Gendoria\CruftFlake\Client;
 
-class ZeroMqClient
+class ZmqClient
 {
 	protected $context;
 	protected $socket;
