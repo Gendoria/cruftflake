@@ -1,6 +1,6 @@
 <?php
 /**
- * Cruft flake config interface
+ * Cruft flake config interface.
  * 
  * Implement this if you want some other way to configure machines.
  * 
@@ -12,9 +12,9 @@ namespace Gendoria\CruftFlake\Config;
 interface ConfigInterface
 {
     /**
-     * Get machine identifier
+     * Get machine identifier.
      * 
-     * @return integer Should be a 10-bit int (decimal 0 to 1023)
+     * @return int Should be a 10-bit int (decimal 0 to 1023)
      */
     public function getMachine();
 }

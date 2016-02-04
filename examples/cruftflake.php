@@ -23,13 +23,13 @@ spl_autoload_register(function ($class) {
 	}
 });
 
-$timer = new \Davegardnerisme\CruftFlake\Timer;
+$timer = new \Gendoria\CruftFlake\Timer\Timer();
 if ($machine !== NULL) {
-    $config = new \Davegardnerisme\CruftFlake\FixedConfig($machine);
+    $config = new \Gendoria\CruftFlake\Config\FixedConfig($machine);
 } else {
-    $config = new \Davegardnerisme\CruftFlake\ZkConfig($zks);
+    $config = new \Gendoria\CruftFlake\Config\ZooKeeperConfig($zks);
 }
-$generator = new \Davegardnerisme\CruftFlake\Generator($config, $timer);
-$zmqRunner = new \Davegardnerisme\CruftFlake\ZeroMq($generator, $port);
+$generator = new \Gendoria\CruftFlake\Generator($config, $timer);
+$zmqRunner = new \Gendoria\CruftFlake\Zmq\ZmqServer($generator, $port);
 
 $zmqRunner->run();

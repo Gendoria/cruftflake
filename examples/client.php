@@ -24,7 +24,7 @@ spl_autoload_register(function ($class) {
 
 $context = new \ZMQContext();
 $socket  = new \ZMQSocket($context, \ZMQ::SOCKET_REQ);
-$cf = new \Davegardnerisme\CruftFlake\CruftFlake($context, $socket);
+$cf = new Gendoria\CruftFlake\Zmq\ZmqClient($context, $socket);
 
 for ($i=0; $i<$n; $i++) {
     $id = $cf->generateId();

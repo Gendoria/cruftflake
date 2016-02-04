@@ -24,7 +24,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
             ->method('send')
             ->with(10);
         
-        $server = $this->getMock('\Gendoria\CruftFlake\Server\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
+        $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
         
         $server->expects($this->once())
             ->method('getZmqSocket')
@@ -50,7 +50,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
             ->method('send')
             ->with(10);
         
-        $server = $this->getMock('\Gendoria\CruftFlake\Server\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
+        $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
         
         $server->expects($this->once())
             ->method('getZmqSocket')
@@ -73,7 +73,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
             ->method('send')
             ->with('UNKNOWN COMMAND');
         
-        $server = $this->getMock('\Gendoria\CruftFlake\Server\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
+        $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
         
         $server->expects($this->once())
             ->method('getZmqSocket')

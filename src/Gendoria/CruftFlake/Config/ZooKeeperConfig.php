@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ZooKeeper-based configuration
+ * ZooKeeper-based configuration.
  *
  * Couple of points:
  *
@@ -28,35 +28,34 @@ use RuntimeException;
 
 class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
 {
-
     /**
-     * Parent path
+     * Parent path.
      *
      * @var string
      */
     private $parentPath;
 
     /**
-     * ZK
+     * ZK.
      *
      * @var \Zookeeper
      */
     private $zk;
 
     /**
-     * Logger
+     * Logger.
      * 
      * @var LoggerInterface
      */
     private $logger;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string $hostnames A comma separated list of hostnames (including
-     *      port)
-     * @param string $zkPath The ZK path we look to find other machines under
-     * @param LoggerInterface $logger Logger class
+     * @param string          $hostnames A comma separated list of hostnames (including
+     *                                   port)
+     * @param string          $zkPath    The ZK path we look to find other machines under
+     * @param LoggerInterface $logger    Logger class
      */
     public function __construct($hostnames, $zkPath = '/cruftflake', LoggerInterface $logger = null)
     {
@@ -76,13 +75,13 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
     }
 
     /**
-     * Get machine identifier
+     * Get machine identifier.
      *
-     * @return integer Should be a 10-bit int (decimal 0 to 1023)
+     * @return int Should be a 10-bit int (decimal 0 to 1023)
      */
     public function getMachine()
     {
-        $machineId = NULL;
+        $machineId = null;
 
         $this->createParentIfNeeded($this->parentPath);
 
@@ -93,14 +92,14 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
         $children = $this->zk->getChildren($this->parentPath);
         foreach ($children as $child) {
             $info = $this->zk->get("{$this->parentPath}/$child");
-            $info = json_decode($info, TRUE);
+            $info = json_decode($info, true);
             if (isset($info['macAddress']) && $info['macAddress'] === $machineInfo['macAddress']) {
                 $machineId = (int) $child;
             }
         }
 
         // find an unused machine number
-        for ($i = 0; $i < 1024, $machineId === NULL; $i++) {
+        for ($i = 0; $i < 1024, $machineId === null; ++$i) {
             $machineNode = $this->machineToNode($i);
             if (in_array($machineNode, $children)) {
                 continue;   // already used
@@ -112,28 +111,29 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
                 array(array(// acl
                     'perms' => \Zookeeper::PERM_ALL,
                     'scheme' => 'world',
-                    'id' => 'anyone'
+                    'id' => 'anyone',
                 ))
             );
-            if ($created !== NULL) {
+            if ($created !== null) {
                 $machineId = $i;
                 break;
             }
         }
 
-        if ($machineId === NULL) {
-            $this->logger->critical("Cannot locate and claim a free machine ID via ZK",
+        if ($machineId === null) {
+            $this->logger->critical('Cannot locate and claim a free machine ID via ZK',
                 array($this));
             throw new RuntimeException(
-            "Cannot locate and claim a free machine ID via ZK"
+            'Cannot locate and claim a free machine ID via ZK'
             );
         }
-        $this->logger->debug("Obtained machine ID ".$machineId.' through ZooKeeper configuration');
+        $this->logger->debug('Obtained machine ID '.$machineId.' through ZooKeeper configuration');
+
         return (int) $machineId;
     }
 
     /**
-     * Get mac address and hostname
+     * Get mac address and hostname.
      *
      * @return array "macAddress", "hostname" keys
      */
@@ -161,11 +161,12 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
             'Unable to identify machine mac address and hostname'
             );
         }
+
         return $info;
     }
 
     /**
-     * Create parent node, if needed
+     * Create parent node, if needed.
      *
      * @param string $nodePath
      */
@@ -177,16 +178,16 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
                 array(array(// acl
                     'perms' => \Zookeeper::PERM_ALL,
                     'scheme' => 'world',
-                    'id' => 'anyone'
+                    'id' => 'anyone',
                 ))
             );
         }
     }
 
     /**
-     * Machine ID to ZK node
+     * Machine ID to ZK node.
      *
-     * @param integer $id
+     * @param int $id
      *
      * @return string The node path to use in ZK
      */
@@ -204,5 +205,4 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
     {
         $this->logger = $logger;
     }
-
 }

@@ -1,49 +1,50 @@
 <?php
 /**
- * ZeroMQ interface for cruftflake
+ * ZeroMQ interface for cruftflake.
  * 
  * @author @davegardnerisme
  */
 
-namespace Gendoria\CruftFlake\Server;
+namespace Gendoria\CruftFlake\Zmq;
 
 use Exception;
 use Gendoria\CruftFlake\Generator;
+use Gendoria\CruftFlake\ServerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class ZmqServer implements LoggerAwareInterface
-{    
+class ZmqServer implements ServerInterface, LoggerAwareInterface
+{
     /**
-     * Cruft flake generator
+     * Cruft flake generator.
      * 
      * @var Generator
      */
     private $generator;
-    
+
     /**
-     * Port
+     * Port.
      * 
-     * @var integer
+     * @var int
      */
     private $port;
-    
+
     /**
-     * Logger
+     * Logger.
      * 
      * @var LoggerInterface
      */
     private $logger;
-    
+
     private $debugMode = false;
-    
+
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param @inject Generator $generator
-     * @param string $port Which TCP port to list on, default 5599
-     * @param boolean $debugMode Debug mode. If set to true, server will only listen for one command, before exiting.
+     * @param string            $port      Which TCP port to list on, default 5599
+     * @param bool              $debugMode Debug mode. If set to true, server will only listen for one command, before exiting.
      */
     public function __construct(Generator $generator, $port = 5599, $debugMode = false)
     {
@@ -52,9 +53,9 @@ class ZmqServer implements LoggerAwareInterface
         $this->logger = new NullLogger();
         $this->debugMode = $debugMode;
     }
-    
+
     /**
-     * Run ZMQ interface for generator
+     * Run ZMQ interface for generator.
      * 
      * Req-rep pattern; msgs are commands:
      * 
@@ -64,16 +65,16 @@ class ZmqServer implements LoggerAwareInterface
     public function run()
     {
         $receiver = $this->getZmqSocket($this->port);
-        while (TRUE) {
+        while (true) {
             $msg = $receiver->recv();
-            $this->logger->debug("ZMQ server received command: ".$msg);
+            $this->logger->debug('ZMQ server received command: '.$msg);
             switch ($msg) {
                 case 'GEN':
                     try {
                         $response = $this->generator->generate();
                     } catch (Exception $e) {
                         $this->logger->error('Generator error: '.$e->getMessage(), array($e, $this));
-                        $response = "ERROR";
+                        $response = 'ERROR';
                     }
                     break;
                 case 'STATUS':
@@ -90,20 +91,22 @@ class ZmqServer implements LoggerAwareInterface
             }
         }
     }
-    
+
     /**
      * Get ZMQ socket.
      * 
-     * @param integer $port Port, on which ZMQ connection should listen.
+     * @param int $port Port, on which ZMQ connection should listen.
+     *
      * @return \ZMQSocket
      */
     public function getZmqSocket($port)
     {
         $context = new \ZMQContext();
         $receiver = new \ZMQSocket($context, \ZMQ::SOCKET_REP);
-        $bindTo = 'tcp://*:' . $port;
+        $bindTo = 'tcp://*:'.$port;
         $this->logger->debug("Binding to {$bindTo}");
         $receiver->bind($bindTo);
+
         return $receiver;
     }
 

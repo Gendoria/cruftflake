@@ -1,6 +1,6 @@
 <?php
 /**
- * Like the Twitter one
+ * Like the Twitter one.
  * 
  * 64 bits:
  * 
@@ -11,6 +11,7 @@
  * 32 bits + 9 = 41 bits of time
  * 2199023255552 < milliseconds = 2199023255 seconds
  *                                2147483647 < max 31 bit int (signed)
+ *
  * @author @davegardnerisme
  */
 
@@ -25,74 +26,74 @@ use UnexpectedValueException;
 class Generator
 {
     /**
-     * Max timestamp
+     * Max timestamp.
      */
     const MAX_ADJUSTED_TIMESTAMP = 2199023255551;
-    
+
     /**
-     * Hexdec lookup
+     * Hexdec lookup.
      * 
      * @staticvar array
      */
     private static $hexdec = array(
-        "0" => 0,
-        "1" => 1,
-        "2" => 2,
-        "3" => 3,
-        "4" => 4,
-        "5" => 5,
-        "6" => 6,
-        "7" => 7,
-        "8" => 8,
-        "9" => 9,
-        "a" => 10,
-        "b" => 11,
-        "c" => 12,
-        "d" => 13,
-        "e" => 14,
-        "f" => 15
+        '0' => 0,
+        '1' => 1,
+        '2' => 2,
+        '3' => 3,
+        '4' => 4,
+        '5' => 5,
+        '6' => 6,
+        '7' => 7,
+        '8' => 8,
+        '9' => 9,
+        'a' => 10,
+        'b' => 11,
+        'c' => 12,
+        'd' => 13,
+        'e' => 14,
+        'f' => 15,
         );
-    
+
     /**
-     * Timer
+     * Timer.
      * 
      * @var TimerInterface
      */
     private $timer;
-    
+
     /**
-     * Configured machine ID - 10 bits (dec 0 -> 1023)
+     * Configured machine ID - 10 bits (dec 0 -> 1023).
      *
-     * @var integer
+     * @var int
      */
     private $machine;
-    
+
     /**
-     * Epoch - in UTC millisecond timestamp
+     * Epoch - in UTC millisecond timestamp.
      *
-     * @var integer
+     * @var int
      */
     private $epoch = 1325376000000;
-    
+
     /**
-     * Sequence number - 12 bits, we auto-increment for same-millisecond collisions
+     * Sequence number - 12 bits, we auto-increment for same-millisecond collisions.
      *
-     * @var integer
+     * @var int
      */
     private $sequence = 1;
-    
+
     /**
-     * The most recent millisecond time window encountered
+     * The most recent millisecond time window encountered.
      *
-     * @var integer
+     * @var int
      */
-    private $lastTime = NULL;
-    
+    private $lastTime = null;
+
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param @inject ConfigInterface $config
-     * @param @inject TimerInterface $timer
+     * @param @inject TimerInterface  $timer
      */
     public function __construct(ConfigInterface $config, TimerInterface $timer)
     {
@@ -104,12 +105,12 @@ class Generator
         }
         $this->timer = $timer;
     }
-    
+
     /**
-     * Generate ID
+     * Generate ID.
      *
      * @return string A 64 bit integer as a string of numbers (so we can deal
-     *      with this on 32 bit platforms) 
+     *                with this on 32 bit platforms) 
      */
     public function generate()
     {
@@ -118,12 +119,12 @@ class Generator
             if ($t < $this->lastTime) {
                 throw new UnexpectedValueException(
                         'Time moved backwards. We cannot generate IDs for '
-                        . ($this->lastTime - $t) . ' milliseconds'
+                        .($this->lastTime - $t).' milliseconds'
                         );
             } elseif ($t < 0) {
                 throw new UnexpectedValueException(
                         'Time is currently set before our epoch - unable '
-                        . 'to generate IDs for ' . (-$t) . ' milliseconds'
+                        .'to generate IDs for '.(-$t).' milliseconds'
                         );
             } elseif ($t > self::MAX_ADJUSTED_TIMESTAMP) {
                 throw new OverflowException(
@@ -133,41 +134,46 @@ class Generator
             $this->sequence = 0;
             $this->lastTime = $t;
         } else {
-            $this->sequence++;
+            ++$this->sequence;
             if ($this->sequence > 4095) {
                 throw new OverflowException(
                         'Sequence overflow (too many IDs generated) - unable to generate IDs for 1 milliseconds'
                         );
             }
         }
-        
+
         if (PHP_INT_SIZE === 4) {
             return $this->mintId32($t, $this->machine, $this->sequence);
         } else {
             return $this->mintId64($t, $this->machine, $this->sequence);
         }
     }
-    
+
     /**
-     * Get stats
+     * Get stats.
      *
-     * @return array
+     * @return array Status array.
+     *               Status fields: 
+     *               * 'machine' - current machine ID
+     *               * 'lastTime' - generator timestamp of last ID generation (converted with epoch)
+     *               * 'sequence' - current sequence
+     *               * 'is32Bit' - true, if PHP works in 32-bit mode
      */
     public function status()
     {
         return array(
-            'machine'   => $this->machine,
-            'lastTime'  => $this->lastTime,
-            'sequence'  => $this->sequence,
-            'is32Bit'   => (PHP_INT_SIZE === 4)
+            'machine' => $this->machine,
+            'lastTime' => $this->lastTime,
+            'sequence' => $this->sequence,
+            'is32Bit' => (PHP_INT_SIZE === 4),
             );
     }
-    
+
     private function mintId32($timestamp, $machine, $sequence)
     {
-        $hi = (int)($timestamp / pow(2,10));
-        $lo = (int)($timestamp * pow(2, 22));
-        
+        $hi = (int) ($timestamp / pow(2, 10));
+        $lo = (int) ($timestamp * pow(2, 22));
+
         // stick in the machine + sequence to the low bit
         $lo = $lo | ($machine << 12) | $sequence;
 
@@ -175,16 +181,18 @@ class Generator
         $hex = pack('N2', $hi, $lo);
         $unpacked = unpack('H*', $hex);
         $value = $this->hexdec($unpacked[1]);
-        return (string)$value;
+
+        return (string) $value;
     }
-    
+
     private function mintId64($timestamp, $machine, $sequence)
     {
-        $timestamp = (int)$timestamp;
+        $timestamp = (int) $timestamp;
         $value = ($timestamp << 22) | ($machine << 12) | $sequence;
-        return (string)$value;
+
+        return (string) $value;
     }
-    
+
     private function hexdec($hex)
     {
         $dec = 0;
@@ -192,6 +200,7 @@ class Generator
             $factor = self::$hexdec[$hex[$i]];
             $dec = bcadd($dec, bcmul($factor, $e));
         }
+
         return $dec;
     }
 }

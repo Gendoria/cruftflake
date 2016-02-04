@@ -1,6 +1,6 @@
 <?php
 /**
- * Fixed configuration
+ * Fixed configuration.
  * 
  * This is designed to be used where each machine **knows** what its machine
  * ID is - eg: via some kind of automatically deployed configuration
@@ -18,43 +18,44 @@ use Psr\Log\NullLogger;
 class FixedConfig implements ConfigInterface, LoggerAwareInterface
 {
     /**
-     * Machine ID
+     * Machine ID.
      * 
-     * @var integer
+     * @var int
      */
     private $machineId;
-    
+
     /**
      * Logger.
      * 
      * @var LoggerInterface
      */
     private $logger;
-    
+
     /**
-     * Constructor
+     * Constructor.
      * 
-     * @param integer $machineId Fixed machine ID.
-     * @param LoggerInterface $logger Logger class
+     * @param int             $machineId Fixed machine ID.
+     * @param LoggerInterface $logger    Logger class
      */
     public function __construct($machineId, LoggerInterface $logger = null)
     {
-        $this->machineId = (int)$machineId;
+        $this->machineId = (int) $machineId;
         if ($logger) {
             $this->logger = $logger;
         } else {
             $this->logger = new NullLogger();
         }
     }
-    
+
     /**
-     * Get machine identifier
+     * Get machine identifier.
      * 
-     * @return integer Should be a 10-bit int (decimal 0 to 1023)
+     * @return int Should be a 10-bit int (decimal 0 to 1023)
      */
     public function getMachine()
     {
         $this->logger->debug('Obtained machine ID '.$this->machineId.' through fixed configuration.');
+
         return $this->machineId;
     }
 
