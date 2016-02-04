@@ -13,4 +13,10 @@ class FixedConfigTest extends PHPUnit_Framework_TestCase
         $config->setLogger(new \Psr\Log\NullLogger());
         $this->assertEquals(1, $config->getMachine());
     }
+    
+    public function testCreateWithLogger()
+    {
+        $config = new \Gendoria\CruftFlake\Config\FixedConfig(1, new \Psr\Log\NullLogger());
+        $this->assertEquals(1, $config->getMachine());
+    }
 }
