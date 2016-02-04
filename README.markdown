@@ -1,5 +1,7 @@
 # CruftFlake
 
+[![Build Status](https://img.shields.io/travis/Gendoria/cruftflake/master.svg)](https://travis-ci.org/Gendoria/cruftflake)
+
 A stab at a version of [Twitter Snowflake](https://github.com/twitter/snowflake)
 but in PHP with a simple ZeroMQ interface (rather than Thrift).
 
@@ -36,29 +38,24 @@ and need to be manually pruned.
 Installation via composer:
 
 	{
-    	"minimum-stability": "dev",
     	"require": {
-	        "posmena/cruftflake": "*"
+	        "gendoria/cruftflake": "*"
 		}
 	}
-
-You should run the tests to verify things are OK:
-
-    ./vendor/bin/phpunit vendor/posmena/cruftflake/test/
 
 There are two scripts provided for playing about with.
 
 1. The generator (the server)
 
-    ./scripts/cruftflake.php
+    ./examples/cruftflake.php
 
 2. A client that will generate N IDs and dump to STDOUT
 
-    ./scripts/client.php -n 100
+    ./examples/client.php -n 100
 
-## Dependencies*
+## Dependencies
 
 * ZeroMQ
-* ZooKeeper
+* ZooKeeper (if you want to use centralized configuration)
 
-*sadly these cannot be added to composer just yet!
+Composer requires php-zmq module installed, but currently does not require zookeper.

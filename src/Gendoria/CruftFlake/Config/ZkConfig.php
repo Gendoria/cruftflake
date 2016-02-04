@@ -19,7 +19,13 @@
 
 namespace Gendoria\CruftFlake\Config;
 
-class ZkConfig implements ConfigInterface
+use BadMethodCallException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use RuntimeException;
+
+class ZkConfig implements ConfigInterface, LoggerAwareInterface
 {
     /**
      * Parent path
@@ -34,6 +40,13 @@ class ZkConfig implements ConfigInterface
      * @var \Zookeeper
      */
     private $zk;
+    
+    /**
+     * Logger
+     * 
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * Constructor
@@ -45,12 +58,14 @@ class ZkConfig implements ConfigInterface
     public function __construct($hostnames, $zkPath = '/cruftflake')
     {
         if (!class_exists('\Zookeeper')) {
-            throw new \BadMethodCallException(
+            $this->logger->critical('Zookeeper not present');
+            throw new BadMethodCallException(
                     'ZooKeeper extension not installed. Try hitting PECL.'
                     );
         }
         $this->zk = new \Zookeeper($hostnames);
         $this->parentPath = $zkPath;
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -101,7 +116,8 @@ class ZkConfig implements ConfigInterface
         }
 
         if ($machineId === NULL) {
-            throw new \RuntimeException(
+            $this->logger->critical("Cannot locate and claim a free machine ID via ZK", array($this));
+            throw new RuntimeException(
                     "Cannot locate and claim a free machine ID via ZK"
                     );
         }
@@ -116,10 +132,12 @@ class ZkConfig implements ConfigInterface
     private function getMachineInfo()
     {
         $info = array();
+        $output = array();
         // HWaddr 12:31:3c:01:65:b8
         // ether 00:1c:42:00:00:08
         exec('ifconfig', $output);
         foreach ($output as $o) {
+            $matched = array();
             if (preg_match('/(HWaddr|ether) ([a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2})/i', $o, $matched)) {
                 $info['macAddress'] = $matched[2];
                 break;
@@ -128,7 +146,8 @@ class ZkConfig implements ConfigInterface
         $info['hostname'] = exec('hostname');
 
         if (empty($info['hostname']) || empty($info['macAddress'])) {
-            throw new \RuntimeException(
+            $this->logger->critical('Unable to identify machine mac address and hostname', array($this));
+            throw new RuntimeException(
                     'Unable to identify machine mac address and hostname'
                     );
         }
@@ -165,5 +184,15 @@ class ZkConfig implements ConfigInterface
     private function machineToNode($id)
     {
         return str_pad($id, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Set logger.
+     * 
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }

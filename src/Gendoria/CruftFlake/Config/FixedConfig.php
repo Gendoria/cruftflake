@@ -11,7 +11,11 @@
 
 namespace Gendoria\CruftFlake\Config;
 
-class FixedConfig implements ConfigInterface
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+
+class FixedConfig implements ConfigInterface, LoggerAwareInterface
 {
     /**
      * Machine ID
@@ -21,6 +25,13 @@ class FixedConfig implements ConfigInterface
     private $machineId;
     
     /**
+     * Logger.
+     * 
+     * @var LoggerInterface
+     */
+    private $logger;
+    
+    /**
      * Constructor
      * 
      * @param integer $machineId
@@ -28,6 +39,7 @@ class FixedConfig implements ConfigInterface
     public function __construct($machineId)
     {
         $this->machineId = (int)$machineId;
+        $this->logger = new NullLogger();
     }
     
     /**
@@ -37,6 +49,17 @@ class FixedConfig implements ConfigInterface
      */
     public function getMachine()
     {
+        $this->logger->debug('Obtained machine ID '.$this->machineId.' through fixed configuration.');
         return $this->machineId;
+    }
+
+    /**
+     * Set logger.
+     * 
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }

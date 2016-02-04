@@ -30,8 +30,8 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "Gendoria\\CruftFlake": "src"
+        "psr-4": {
+            "Gendoria\\CruftFlake\\": "src/Gendoria/CruftFlake"
         }
     },
     "require": {
