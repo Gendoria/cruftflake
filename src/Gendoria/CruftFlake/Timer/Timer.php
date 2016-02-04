@@ -1,9 +1,9 @@
 <?php
-    /**
-     * Cruft flake timer.
-     * 
-     * @author @davegardnerisme
-     */
+/**
+ * Cruft flake timer.
+ * 
+ * @author @davegardnerisme
+ */
 
 namespace Gendoria\CruftFlake\Timer;
 
@@ -14,7 +14,7 @@ class Timer implements TimerInterface
      * 
      * (Number of whole milliseconds that have passed since 1970-01-01
      * 
-     * @return integer
+     * @return int
      */
     public function getUnixTimestamp()
     {

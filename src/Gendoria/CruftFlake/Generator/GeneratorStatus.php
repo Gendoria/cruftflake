@@ -40,10 +40,10 @@ class GeneratorStatus
     /**
      * Class constructor.
      * 
-     * @param int     $machine
-     * @param int     $lastTime
-     * @param int     $sequence
-     * @param boolean $is32Bit
+     * @param int  $machine
+     * @param int  $lastTime
+     * @param int  $sequence
+     * @param bool $is32Bit
      */
     public function __construct($machine, $lastTime, $sequence, $is32Bit)
     {

@@ -21,13 +21,13 @@ class LocalClient implements ClientInterface
      * @var Generator
      */
     private $generator;
-    
+
     /**
      * Construct local client class injected with generator instance.
      * 
      * @param Generator $generator
      */
-    function __construct(Generator $generator)
+    public function __construct(Generator $generator)
     {
         $this->generator = $generator;
     }

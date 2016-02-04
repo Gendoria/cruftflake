@@ -1,13 +1,13 @@
 <?php
-    /**
-     * Fixed configuration.
-     * 
-     * This is designed to be used where each machine **knows** what its machine
-     * ID is - eg: via some kind of automatically deployed configuration
-     * (puppet etc.)
-     * 
-     * @author @davegardnerisme
-     */
+/**
+ * Fixed configuration.
+ * 
+ * This is designed to be used where each machine **knows** what its machine
+ * ID is - eg: via some kind of automatically deployed configuration
+ * (puppet etc.)
+ * 
+ * @author @davegardnerisme
+ */
 
 namespace Gendoria\CruftFlake\Config;
 
