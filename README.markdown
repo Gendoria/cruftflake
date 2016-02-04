@@ -53,14 +53,17 @@ There are several example scripts provided for playing about with.
 Both require previous composer update.
 
 1. The generator (the server)
+
     ```shell
         ./examples/server.php
     ```
 2. A client, that will generate N IDs and dump to STDOUT
+
     ```shell
     ./examples/client.php -n 100
     ```
 3. A client, that will ask server for generator status
+
     ```shell
     ./examples/status.php
     ```
