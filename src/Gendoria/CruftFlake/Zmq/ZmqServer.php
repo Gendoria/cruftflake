@@ -8,7 +8,7 @@
 namespace Gendoria\CruftFlake\Zmq;
 
 use Exception;
-use Gendoria\CruftFlake\Generator;
+use Gendoria\CruftFlake\Generator\Generator;
 use Gendoria\CruftFlake\ServerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;

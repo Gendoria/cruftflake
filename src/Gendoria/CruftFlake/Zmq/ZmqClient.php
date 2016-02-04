@@ -9,7 +9,7 @@
 namespace Gendoria\CruftFlake\Zmq;
 
 use Gendoria\CruftFlake\ClientInterface;
-use Gendoria\CruftFlake\GeneratorStatus;
+use Gendoria\CruftFlake\Generator\GeneratorStatus;
 use RuntimeException;
 
 class ZmqClient implements ClientInterface

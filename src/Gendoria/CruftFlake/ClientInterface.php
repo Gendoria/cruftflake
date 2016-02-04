@@ -8,6 +8,9 @@
 
 namespace Gendoria\CruftFlake;
 
+use Gendoria\CruftFlake\Generator\Generator;
+use Gendoria\CruftFlake\Generator\GeneratorStatus;
+
 /**
  * CruftFlake client interface.
  *
@@ -18,7 +21,7 @@ interface ClientInterface
     /**
      * Generate new ID.
      * 
-     * @return int
+     * @return integer
      */
     public function generateId();
 

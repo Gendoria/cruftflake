@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace Gendoria\CruftFlake;
+namespace Gendoria\CruftFlake\Generator;
 
 /**
  * Description of GeneratorStatus.
@@ -49,7 +49,7 @@ class GeneratorStatus
      * @param int     $machine
      * @param int     $lastTime
      * @param int     $sequence
-     * @param noolean $is32Bit
+     * @param boolean $is32Bit
      */
     public function __construct($machine, $lastTime, $sequence, $is32Bit)
     {

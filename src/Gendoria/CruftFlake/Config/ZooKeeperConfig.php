@@ -141,9 +141,11 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
     {
         $info = array();
         $output = array();
-        // HWaddr 12:31:3c:01:65:b8
-        // ether 00:1c:42:00:00:08
+        // Possible responses are: HWaddr 12:31:3c:01:65:b8, ether 00:1c:42:00:00:08
         exec('ifconfig', $output);
+        if ($output == null) {
+            $output = array();
+        }
         foreach ($output as $o) {
             $matched = array();
             if (preg_match('/(HWaddr|ether) ([a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2})/i',

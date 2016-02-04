@@ -1,6 +1,6 @@
 <?php
 
-use Gendoria\CruftFlake\Generator;
+use Gendoria\CruftFlake\Generator\Generator;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,7 +43,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testConstructs()
     {
         $cf = $this->buildSystemUnderTest();
-        $this->assertInstanceOf('\Gendoria\CruftFlake\Generator', $cf);
+        $this->assertInstanceOf('\Gendoria\CruftFlake\Generator\Generator', $cf);
     }
     
     public function testFailsWithBadMachineIdString()
@@ -78,7 +78,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->machineId = 1023;
         $cf = $this->buildSystemUnderTest();
-        $this->assertInstanceOf('\Gendoria\CruftFlake\Generator', $cf);
+        $this->assertInstanceOf('\Gendoria\CruftFlake\Generator\Generator', $cf);
     }
     
     public function testGenerate()

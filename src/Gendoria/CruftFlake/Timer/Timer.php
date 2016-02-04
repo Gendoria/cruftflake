@@ -14,10 +14,10 @@ class Timer implements TimerInterface
      * 
      * (Number of whole milliseconds that have passed since 1970-01-01
      * 
-     * @return int
+     * @return integer
      */
     public function getUnixTimestamp()
     {
-        return floor(microtime(true) * 1000);
+        return (int)floor(microtime(true) * 1000);
     }
 }

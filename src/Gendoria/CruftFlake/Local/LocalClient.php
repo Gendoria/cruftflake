@@ -2,6 +2,9 @@
 
 namespace Gendoria\CruftFlake\Local;
 
+use Gendoria\CruftFlake\ClientInterface;
+use Gendoria\CruftFlake\Generator\Generator;
+
 /**
  * Local CruftFlake client.
  * 
@@ -10,12 +13,12 @@ namespace Gendoria\CruftFlake\Local;
  *
  * @author Tomasz Struczyński <tomasz.struczynski@isobar.com>
  */
-class LocalClient implements \Gendoria\CruftFlake\ClientInterface
+class LocalClient implements ClientInterface
 {
     /**
      * Generator instance.
      * 
-     * @var \Gendoria\CruftFlake\Generator
+     * @var Generator
      */
     private $generator;
 

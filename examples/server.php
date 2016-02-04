@@ -23,7 +23,7 @@ if ($machine !== NULL) {
 } else {
     $config = new \Gendoria\CruftFlake\Config\ZooKeeperConfig($zks);
 }
-$generator = new \Gendoria\CruftFlake\Generator($config, $timer);
+$generator = new \Gendoria\CruftFlake\Generator\Generator($config, $timer);
 $zmqRunner = new \Gendoria\CruftFlake\Zmq\ZmqServer($generator, $port);
 
 $zmqRunner->run();

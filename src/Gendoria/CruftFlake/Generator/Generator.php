@@ -15,7 +15,7 @@
  * @author @davegardnerisme
  */
 
-namespace Gendoria\CruftFlake;
+namespace Gendoria\CruftFlake\Generator;
 
 use Gendoria\CruftFlake\Config\ConfigInterface;
 use Gendoria\CruftFlake\Timer\TimerInterface;
@@ -85,7 +85,7 @@ class Generator
     /**
      * The most recent millisecond time window encountered.
      *
-     * @var int
+     * @var integer
      */
     private $lastTime = null;
 
@@ -114,7 +114,7 @@ class Generator
      */
     public function generate()
     {
-        $t = floor($this->timer->getUnixTimestamp() - $this->epoch);
+        $t = (int)floor($this->timer->getUnixTimestamp() - $this->epoch);
         if ($t !== $this->lastTime) {
             if ($t < $this->lastTime) {
                 throw new UnexpectedValueException(

@@ -15,6 +15,8 @@ interface ServerInterface
 {
     /**
      * Run CruftFlake server.
+     * 
+     * @return void
      */
     public function run();
 }
