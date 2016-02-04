@@ -22,7 +22,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
             ->willReturn('GEN');
         $socket->expects($this->once())
             ->method('send')
-            ->with(10);
+            ->with('{"code":200,"message":10}');
         
         $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
         
@@ -38,9 +38,10 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
     public function testStatus()
     {
         $generator = $this->getMock('\Gendoria\CruftFlake\Generator', array('status'), array(), '', false);
+        $generatorStatus = new Gendoria\CruftFlake\GeneratorStatus(1, 1, 1, true);
         $generator->expects($this->once())
             ->method('status')
-            ->will($this->returnValue(10));
+            ->will($this->returnValue($generatorStatus));
 
         $socket = $this->getMock('ZMQSocket', array('recv', 'send'), array(), '', false);
         $socket->expects($this->once())
@@ -48,7 +49,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
             ->willReturn('STATUS');
         $socket->expects($this->once())
             ->method('send')
-            ->with(10);
+            ->with('{"code":200,"message":{"machine":1,"lastTime":1,"sequence":1,"is32Bit":true}}');
         
         $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
         
@@ -71,7 +72,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
             ->willReturn('DUMMY_UNKNOWN_COMMAND');
         $socket->expects($this->once())
             ->method('send')
-            ->with('UNKNOWN COMMAND');
+            ->with('{"code":404,"message":"UNKNOWN COMMAND"}');
         
         $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
         
