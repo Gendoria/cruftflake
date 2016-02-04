@@ -1,5 +1,7 @@
 <?php
 
+use Gendoria\CruftFlake\Generator;
+
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
     private $machineId = 1;
@@ -9,10 +11,10 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->timer = $this->getMockBuilder('\Gendoria\CruftFlake\TimerInterface')
+        $this->timer = $this->getMockBuilder('\Gendoria\CruftFlake\Timer\TimerInterface')
                             ->disableOriginalConstructor()
                             ->getMock();
-        $this->config = $this->getMockBuilder('\Gendoria\CruftFlake\ConfigInterface')
+        $this->config = $this->getMockBuilder('\Gendoria\CruftFlake\Config\ConfigInterface')
                             ->disableOriginalConstructor()
                             ->getMock();
     }
@@ -22,7 +24,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->config->expects($this->once())
                      ->method('getMachine')
                      ->will($this->returnValue($this->machineId));
-        return new \Gendoria\CruftFlake\Generator($this->config, $this->timer);
+        return new Generator($this->config, $this->timer);
     }
     
     private function assertId($id)
@@ -137,7 +139,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $e = NULL;
         try {
             $id1 = $cf->generate();
-        } catch (\UnexpectedValueException $e) {
+        } catch (UnexpectedValueException $e) {
             
         }
         $this->assertInstanceOf('\UnexpectedValueException', $e);
@@ -161,7 +163,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $e = NULL;
         try {
             $id2 = $cf->generate();
-        } catch (\UnexpectedValueException $e) {
+        } catch (UnexpectedValueException $e) {
             
         }
         $this->assertInstanceOf('\UnexpectedValueException', $e);
@@ -200,7 +202,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $e = NULL;
         try {
             $id2 = $cf->generate();
-        } catch (\OverflowException $e) {
+        } catch (OverflowException $e) {
             
         }
         $this->assertInstanceOf('\OverflowException', $e);
@@ -270,7 +272,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $e = NULL;
         try {
             $id2 = $cf->generate();
-        } catch (\OverflowException $e) {
+        } catch (OverflowException $e) {
             
         }
         $this->assertInstanceOf('\OverflowException', $e);

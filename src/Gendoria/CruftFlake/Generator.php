@@ -16,6 +16,12 @@
 
 namespace Gendoria\CruftFlake;
 
+use Gendoria\CruftFlake\Config\ConfigInterface;
+use Gendoria\CruftFlake\Timer\TimerInterface;
+use InvalidArgumentException;
+use OverflowException;
+use UnexpectedValueException;
+
 class Generator
 {
     /**
@@ -92,7 +98,7 @@ class Generator
     {
         $this->machine = $config->getMachine();
         if (!is_int($this->machine) || $this->machine < 0 || $this->machine > 1023) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                     'Machine identifier invalid -- must be 10 bit integer (0 to 1023)'
                     );
         }
@@ -110,17 +116,17 @@ class Generator
         $t = floor($this->timer->getUnixTimestamp() - $this->epoch);
         if ($t !== $this->lastTime) {
             if ($t < $this->lastTime) {
-                throw new \UnexpectedValueException(
+                throw new UnexpectedValueException(
                         'Time moved backwards. We cannot generate IDs for '
                         . ($this->lastTime - $t) . ' milliseconds'
                         );
             } elseif ($t < 0) {
-                throw new \UnexpectedValueException(
+                throw new UnexpectedValueException(
                         'Time is currently set before our epoch - unable '
                         . 'to generate IDs for ' . (-$t) . ' milliseconds'
                         );
             } elseif ($t > self::MAX_ADJUSTED_TIMESTAMP) {
-                throw new \OverflowException(
+                throw new OverflowException(
                         'Timestamp overflow (past end of lifespan) - unable to generate any more IDs'
                         );
             }
@@ -129,7 +135,7 @@ class Generator
         } else {
             $this->sequence++;
             if ($this->sequence > 4095) {
-                throw new \OverflowException(
+                throw new OverflowException(
                         'Sequence overflow (too many IDs generated) - unable to generate IDs for 1 milliseconds'
                         );
             }

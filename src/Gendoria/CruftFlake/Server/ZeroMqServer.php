@@ -7,7 +7,9 @@
 
 namespace Gendoria\CruftFlake;
 
-class ZeroMq
+use Exception;
+
+class ZeroMqServer
 {
     /**
      * Cruft flake generator
@@ -56,7 +58,7 @@ class ZeroMq
                 case 'GEN':
                     try {
                         $response = $this->generator->generate();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $response = "ERROR";
                     }
                     break;

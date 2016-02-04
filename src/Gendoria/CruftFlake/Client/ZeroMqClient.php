@@ -5,9 +5,9 @@
  * @author @bobbyjason
  */
 
-namespace Gendoria\CruftFlake;
+namespace Gendoria\CruftFlake\Client;
 
-class CruftFlake
+class ZeroMqClient
 {
 	protected $context;
 	protected $socket;

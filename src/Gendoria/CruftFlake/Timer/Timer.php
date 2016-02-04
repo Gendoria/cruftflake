@@ -5,7 +5,7 @@
  * @author @davegardnerisme
  */
 
-namespace Gendoria\CruftFlake;
+namespace Gendoria\CruftFlake\Timer;
 
 class Timer implements TimerInterface
 {

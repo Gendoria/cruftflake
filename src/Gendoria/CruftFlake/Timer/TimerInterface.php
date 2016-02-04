@@ -7,7 +7,7 @@
  * @author @davegardnerisme
  */
 
-namespace Gendoria\CruftFlake;
+namespace Gendoria\CruftFlake\Timer;
 
 interface TimerInterface
 {
