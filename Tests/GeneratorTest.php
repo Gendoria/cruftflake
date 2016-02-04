@@ -19,6 +19,11 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
                             ->getMock();
     }
     
+    /**
+     * Get generator for normal tests.
+     * 
+     * @return Generator
+     */
     private function buildSystemUnderTest()
     {
         $this->config->expects($this->once())
@@ -26,6 +31,24 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
                      ->will($this->returnValue($this->machineId));
         return new Generator($this->config, $this->timer);
     }
+    
+    /**
+     * Get generator for 32 bit tests.
+     * 
+     * @return Generator
+     */
+    private function buildSystemUnderTest32Bit()
+    {
+        $this->config->expects($this->once())
+                     ->method('getMachine')
+                     ->will($this->returnValue($this->machineId));
+        $generator = $this->getMock('Gendoria\CruftFlake\Generator\Generator', array('is32Bit'), array($this->config, $this->timer));
+        $generator->expects($this->any())
+            ->method('is32Bit')
+            ->will($this->returnValue(true));
+        return $generator;
+    }
+    
     
     private function assertId($id)
     {
@@ -90,6 +113,17 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $id = $cf->generate();
         $this->assertId($id);
     }
+    
+    public function testGenerate32bit()
+    {
+        $this->timer->expects($this->once())
+                    ->method('getUnixTimestamp')
+                    ->will($this->returnValue(1341246960000));
+        $cf = $this->buildSystemUnderTest32Bit();
+        $id = $cf->generate();
+        $this->assertId($id);
+    }
+    
     
     public function testGenerateForPerMillisecondCollisions()
     {

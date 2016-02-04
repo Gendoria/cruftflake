@@ -123,11 +123,21 @@ class Generator
             $this->generateWithSameTime();
         }
 
-        if (PHP_INT_SIZE === 4) {
+        if ($this->is32Bit()) {
             return $this->mintId32($t, $this->machine, $this->sequence);
         } else {
             return $this->mintId64($t, $this->machine, $this->sequence);
         }
+    }
+    
+    /**
+     * Return true, if we are on 32 bit platform.
+     * 
+     * @return boolean
+     */
+    protected function is32Bit()
+    {
+        return (PHP_INT_SIZE === 4);
     }
 
     /**
