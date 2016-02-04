@@ -28,7 +28,12 @@ class LocalClientTest extends PHPUnit_Framework_TestCase
     
     public function testStatus()
     {
-        $timer = new Timer();
+        $timer = $this->getMockBuilder('\Gendoria\CruftFlake\Timer\TimerInterface')
+                            ->disableOriginalConstructor()
+                            ->getMock();
+        $timer->expects($this->once())
+                    ->method('getUnixTimestamp')
+                    ->will($this->returnValue(1341246960000));
         $config = new FixedConfig(1);
         $generator = new Generator($config, $timer);
 
