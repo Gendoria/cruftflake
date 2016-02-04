@@ -34,12 +34,17 @@ class FixedConfig implements ConfigInterface, LoggerAwareInterface
     /**
      * Constructor
      * 
-     * @param integer $machineId
+     * @param integer $machineId Fixed machine ID.
+     * @param LoggerInterface $logger Logger class
      */
-    public function __construct($machineId)
+    public function __construct($machineId, LoggerInterface $logger = null)
     {
         $this->machineId = (int)$machineId;
-        $this->logger = new NullLogger();
+        if ($logger) {
+            $this->logger = $logger;
+        } else {
+            $this->logger = new NullLogger();
+        }
     }
     
     /**

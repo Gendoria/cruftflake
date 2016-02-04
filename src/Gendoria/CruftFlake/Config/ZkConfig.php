@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ZooKeeper-based configuration
  *
@@ -27,6 +28,7 @@ use RuntimeException;
 
 class ZkConfig implements ConfigInterface, LoggerAwareInterface
 {
+
     /**
      * Parent path
      *
@@ -40,7 +42,7 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
      * @var \Zookeeper
      */
     private $zk;
-    
+
     /**
      * Logger
      * 
@@ -54,18 +56,23 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
      * @param string $hostnames A comma separated list of hostnames (including
      *      port)
      * @param string $zkPath The ZK path we look to find other machines under
+     * @param LoggerInterface $logger Logger class
      */
-    public function __construct($hostnames, $zkPath = '/cruftflake')
+    public function __construct($hostnames, $zkPath = '/cruftflake', LoggerInterface $logger = null)
     {
         if (!class_exists('\Zookeeper')) {
             $this->logger->critical('Zookeeper not present');
             throw new BadMethodCallException(
-                    'ZooKeeper extension not installed. Try hitting PECL.'
-                    );
+            'ZooKeeper extension not installed. Try hitting PECL.'
+            );
         }
         $this->zk = new \Zookeeper($hostnames);
         $this->parentPath = $zkPath;
-        $this->logger = new NullLogger();
+        if ($logger) {
+            $this->logger = $logger;
+        } else {
+            $this->logger = new NullLogger();
+        }
     }
 
     /**
@@ -88,12 +95,12 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
             $info = $this->zk->get("{$this->parentPath}/$child");
             $info = json_decode($info, TRUE);
             if (isset($info['macAddress']) && $info['macAddress'] === $machineInfo['macAddress']) {
-                $machineId = (int)$child;
+                $machineId = (int) $child;
             }
         }
 
         // find an unused machine number
-        for ($i=0; $i<1024, $machineId === NULL; $i++) {
+        for ($i = 0; $i < 1024, $machineId === NULL; $i++) {
             $machineNode = $this->machineToNode($i);
             if (in_array($machineNode, $children)) {
                 continue;   // already used
@@ -101,14 +108,13 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
 
             // attempt to claim
             $created = $this->zk->create(
-                    "{$this->parentPath}/{$machineNode}",
-                    json_encode($machineInfo),
-                    array(array(                    // acl
-                        'perms'     => \Zookeeper::PERM_ALL,
-                        'scheme'    => 'world',
-                        'id'        => 'anyone'
-                        ))
-                    );
+                "{$this->parentPath}/{$machineNode}", json_encode($machineInfo),
+                array(array(// acl
+                    'perms' => \Zookeeper::PERM_ALL,
+                    'scheme' => 'world',
+                    'id' => 'anyone'
+                ))
+            );
             if ($created !== NULL) {
                 $machineId = $i;
                 break;
@@ -116,12 +122,13 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
         }
 
         if ($machineId === NULL) {
-            $this->logger->critical("Cannot locate and claim a free machine ID via ZK", array($this));
+            $this->logger->critical("Cannot locate and claim a free machine ID via ZK",
+                array($this));
             throw new RuntimeException(
-                    "Cannot locate and claim a free machine ID via ZK"
-                    );
+            "Cannot locate and claim a free machine ID via ZK"
+            );
         }
-        return (int)$machineId;
+        return (int) $machineId;
     }
 
     /**
@@ -138,7 +145,8 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
         exec('ifconfig', $output);
         foreach ($output as $o) {
             $matched = array();
-            if (preg_match('/(HWaddr|ether) ([a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2})/i', $o, $matched)) {
+            if (preg_match('/(HWaddr|ether) ([a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2})/i',
+                    $o, $matched)) {
                 $info['macAddress'] = $matched[2];
                 break;
             }
@@ -146,10 +154,11 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
         $info['hostname'] = exec('hostname');
 
         if (empty($info['hostname']) || empty($info['macAddress'])) {
-            $this->logger->critical('Unable to identify machine mac address and hostname', array($this));
+            $this->logger->critical('Unable to identify machine mac address and hostname',
+                array($this));
             throw new RuntimeException(
-                    'Unable to identify machine mac address and hostname'
-                    );
+            'Unable to identify machine mac address and hostname'
+            );
         }
         return $info;
     }
@@ -163,14 +172,13 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
     {
         if (!$this->zk->exists($nodePath)) {
             $this->zk->create(
-                    $nodePath,
-                    'Cruftflake machines',
-                    array(array(                    // acl
-                        'perms'     => \Zookeeper::PERM_ALL,
-                        'scheme'    => 'world',
-                        'id'        => 'anyone'
-                        ))
-                    );
+                $nodePath, 'Cruftflake machines',
+                array(array(// acl
+                    'perms' => \Zookeeper::PERM_ALL,
+                    'scheme' => 'world',
+                    'id' => 'anyone'
+                ))
+            );
         }
     }
 
@@ -195,4 +203,5 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
     {
         $this->logger = $logger;
     }
+
 }
