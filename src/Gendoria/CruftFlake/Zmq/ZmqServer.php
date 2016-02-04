@@ -109,7 +109,7 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
      *
      * @return \ZMQSocket
      */
-    public function getZmqSocket($port)
+    protected function getZmqSocket($port)
     {
         $context = new \ZMQContext();
         $receiver = new \ZMQSocket($context, \ZMQ::SOCKET_REP);

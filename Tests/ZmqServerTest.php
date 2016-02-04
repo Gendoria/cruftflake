@@ -35,6 +35,32 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
         $server->run();
     }
     
+    public function testGenerateException()
+    {
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('generate'), array(), '', false);
+        $generator->expects($this->once())
+            ->method('generate')
+            ->will($this->throwException(new Exception()));
+
+        $socket = $this->getMock('ZMQSocket', array('recv', 'send'), array(), '', false);
+        $socket->expects($this->once())
+            ->method('recv')
+            ->willReturn('GEN');
+        $socket->expects($this->once())
+            ->method('send')
+            ->with('{"code":500,"message":"ERROR"}');
+        
+        $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
+        
+        $server->expects($this->once())
+            ->method('getZmqSocket')
+            ->with(5599)
+            ->will($this->returnValue($socket));        
+        
+        /* @var $server ZmqServer */
+        $server->run();
+    }
+    
     public function testStatus()
     {
         $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status'), array(), '', false);
