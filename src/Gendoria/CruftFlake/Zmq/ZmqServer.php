@@ -43,7 +43,7 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
      * Constructor.
      * 
      * @param @inject Generator $generator
-     * @param string            $port      Which TCP port to list on, default 5599
+     * @param integer           $port      Which TCP port to list on, default 5599
      * @param bool              $debugMode Debug mode. If set to true, server will only listen for one command, before exiting.
      */
     public function __construct(Generator $generator, $port = 5599, $debugMode = false)
