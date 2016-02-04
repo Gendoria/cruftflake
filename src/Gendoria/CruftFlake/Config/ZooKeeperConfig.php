@@ -102,7 +102,7 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
         for ($i = 0; $i < 1024, $machineId === null; ++$i) {
             $machineNode = $this->machineToNode($i);
             if (in_array($machineNode, $children)) {
-                continue;   // already used
+                continue; // already used
             }
 
             // attempt to claim

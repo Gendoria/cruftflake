@@ -1,9 +1,9 @@
 <?php
 /**
- * Cruft flake timer.
- * 
- * @author @davegardnerisme
- */
+     * Cruft flake timer.
+     * 
+     * @author @davegardnerisme
+     */
 
 namespace Gendoria\CruftFlake\Timer;
 
@@ -18,6 +18,6 @@ class Timer implements TimerInterface
      */
     public function getUnixTimestamp()
     {
-        return (int)floor(microtime(true) * 1000);
+        return (int) floor(microtime(true) * 1000);
     }
 }
