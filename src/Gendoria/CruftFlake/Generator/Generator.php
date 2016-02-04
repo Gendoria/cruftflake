@@ -114,12 +114,12 @@ class Generator
      */
     public function generate()
     {
-        $t = (int)floor($this->timer->getUnixTimestamp() - $this->epoch);
+        $t = (int) floor($this->timer->getUnixTimestamp()-$this->epoch);
         if ($t !== $this->lastTime) {
             if ($t < $this->lastTime) {
                 throw new UnexpectedValueException(
                         'Time moved backwards. We cannot generate IDs for '
-                        .($this->lastTime - $t).' milliseconds'
+                        .($this->lastTime-$t).' milliseconds'
                         );
             } elseif ($t < 0) {
                 throw new UnexpectedValueException(
@@ -186,7 +186,7 @@ class Generator
     private function hexdec($hex)
     {
         $dec = 0;
-        for ($i = strlen($hex) - 1, $e = 1; $i >= 0; $i--, $e = bcmul($e, 16)) {
+        for ($i = strlen($hex)-1, $e = 1; $i >= 0; $i--, $e = bcmul($e, 16)) {
             $factor = self::$hexdec[$hex[$i]];
             $dec = bcadd($dec, bcmul($factor, $e));
         }
