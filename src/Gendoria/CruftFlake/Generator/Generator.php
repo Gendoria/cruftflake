@@ -26,7 +26,6 @@ use UnexpectedValueException;
 
 class Generator
 {
-
     /**
      * Max timestamp.
      */
@@ -129,21 +128,22 @@ class Generator
             return $this->mintId64($t, $this->machine, $this->sequence);
         }
     }
-    
+
     /**
      * Return true, if we are on 32 bit platform.
      * 
-     * @return boolean
+     * @return bool
      */
     protected function is32Bit()
     {
-        return (PHP_INT_SIZE === 4);
+        return PHP_INT_SIZE === 4;
     }
 
     /**
      * Generate new ID with different time.
      * 
-     * @param integer $t
+     * @param int $t
+     *
      * @throws UnexpectedValueException
      * @throws OverflowException
      */
@@ -152,12 +152,12 @@ class Generator
         if ($t < $this->lastTime) {
             throw new UnexpectedValueException(
             'Time moved backwards. We cannot generate IDs for '
-            . ($this->lastTime - $t) . ' milliseconds'
+            .($this->lastTime - $t).' milliseconds'
             );
         } elseif ($t < 0) {
             throw new UnexpectedValueException(
             'Time is currently set before our epoch - unable '
-            . 'to generate IDs for ' . (-$t) . ' milliseconds'
+            .'to generate IDs for '.(-$t).' milliseconds'
             );
         } elseif ($t > self::MAX_ADJUSTED_TIMESTAMP) {
             throw new OverflowException(
@@ -228,5 +228,4 @@ class Generator
 
         return $dec;
     }
-
 }

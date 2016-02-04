@@ -65,34 +65,19 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     public function run()
     {
         $receiver = $this->getZmqSocket($this->port);
-        $response = array(
-            'code' => 200,
-            'message' => '',
-        );
         while (true) {
             $msg = $receiver->recv();
             $this->logger->debug('ZMQ server received command: '.$msg);
             switch ($msg) {
                 case 'GEN':
-                    try {
-                        $response['message'] = $this->generator->generate();
-                    } catch (Exception $e) {
-                        $this->logger->error('Generator error: '.$e->getMessage(), array($e, $this));
-                        $response = array(
-                            'code' => 500,
-                            'message' => 'ERROR',
-                        );
-                    }
+                    $response = $this->commandGenerate();
                     break;
                 case 'STATUS':
-                    $response['message'] = $this->generator->status();
+                    $response = $this->commandStatus();
                     break;
                 default:
                     $this->logger->debug('Unknown command received: '.$msg);
-                    $response = array(
-                        'code' => 404,
-                        'message' => 'UNKNOWN COMMAND',
-                    );
+                    $response = $this->createResponse('UNKNOWN COMMAND', 404);
                     break;
             }
             $receiver->send(json_encode($response));
@@ -100,6 +85,49 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
                 break;
             }
         }
+    }
+
+    /**
+     * Create generate command response.
+     * 
+     * @return array
+     */
+    private function commandGenerate()
+    {
+        try {
+            $response = $this->createResponse($this->generator->generate());
+        } catch (Exception $e) {
+            $this->logger->error('Generator error: '.$e->getMessage(), array($e, $this));
+            $response = $this->createResponse('ERROR', 500);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Create status command response.
+     * 
+     * @return array
+     */
+    private function commandStatus()
+    {
+        return $this->createResponse($this->generator->status());
+    }
+
+    /**
+     * Prepare response.
+     * 
+     * @param string $message
+     * @param int    $code
+     * 
+     * @return array
+     */
+    private function createResponse($message, $code = 200)
+    {
+        return array(
+            'code' => $code,
+            'message' => $message,
+        );
     }
 
     /**
