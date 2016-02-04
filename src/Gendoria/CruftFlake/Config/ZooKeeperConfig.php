@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
 
-class ZkConfig implements ConfigInterface, LoggerAwareInterface
+class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
 {
 
     /**
@@ -128,6 +128,7 @@ class ZkConfig implements ConfigInterface, LoggerAwareInterface
             "Cannot locate and claim a free machine ID via ZK"
             );
         }
+        $this->logger->debug("Obtained machine ID ".$machineId.' through ZooKeeper configuration');
         return (int) $machineId;
     }
 
