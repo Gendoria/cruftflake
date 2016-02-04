@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Like the Twitter one.
  * 
@@ -25,6 +26,7 @@ use UnexpectedValueException;
 
 class Generator
 {
+
     /**
      * Max timestamp.
      */
@@ -52,7 +54,7 @@ class Generator
         'd' => 13,
         'e' => 14,
         'f' => 15,
-        );
+    );
 
     /**
      * Timer.
@@ -100,8 +102,8 @@ class Generator
         $this->machine = $config->getMachine();
         if (!is_int($this->machine) || $this->machine < 0 || $this->machine > 1023) {
             throw new InvalidArgumentException(
-                    'Machine identifier invalid -- must be 10 bit integer (0 to 1023)'
-                    );
+            'Machine identifier invalid -- must be 10 bit integer (0 to 1023)'
+            );
         }
         $this->timer = $timer;
     }
@@ -116,30 +118,9 @@ class Generator
     {
         $t = (int) floor($this->timer->getUnixTimestamp() - $this->epoch);
         if ($t !== $this->lastTime) {
-            if ($t < $this->lastTime) {
-                throw new UnexpectedValueException(
-                        'Time moved backwards. We cannot generate IDs for '
-                        .($this->lastTime - $t).' milliseconds'
-                        );
-            } elseif ($t < 0) {
-                throw new UnexpectedValueException(
-                        'Time is currently set before our epoch - unable '
-                        .'to generate IDs for '.(-$t).' milliseconds'
-                        );
-            } elseif ($t > self::MAX_ADJUSTED_TIMESTAMP) {
-                throw new OverflowException(
-                        'Timestamp overflow (past end of lifespan) - unable to generate any more IDs'
-                        );
-            }
-            $this->sequence = 0;
-            $this->lastTime = $t;
+            $this->generateWithDifferentTime($t);
         } else {
-            ++$this->sequence;
-            if ($this->sequence > 4095) {
-                throw new OverflowException(
-                        'Sequence overflow (too many IDs generated) - unable to generate IDs for 1 milliseconds'
-                        );
-            }
+            $this->generateWithSameTime();
         }
 
         if (PHP_INT_SIZE === 4) {
@@ -150,13 +131,57 @@ class Generator
     }
 
     /**
+     * Generate new ID with different time.
+     * 
+     * @param integer $t
+     * @throws UnexpectedValueException
+     * @throws OverflowException
+     */
+    private function generateWithDifferentTime($t)
+    {
+        if ($t < $this->lastTime) {
+            throw new UnexpectedValueException(
+            'Time moved backwards. We cannot generate IDs for '
+            . ($this->lastTime - $t) . ' milliseconds'
+            );
+        } elseif ($t < 0) {
+            throw new UnexpectedValueException(
+            'Time is currently set before our epoch - unable '
+            . 'to generate IDs for ' . (-$t) . ' milliseconds'
+            );
+        } elseif ($t > self::MAX_ADJUSTED_TIMESTAMP) {
+            throw new OverflowException(
+            'Timestamp overflow (past end of lifespan) - unable to generate any more IDs'
+            );
+        }
+        $this->sequence = 0;
+        $this->lastTime = $t;
+    }
+
+    /**
+     * Generate new ID with same time.
+     * 
+     * @throws OverflowException
+     */
+    private function generateWithSameTime()
+    {
+        ++$this->sequence;
+        if ($this->sequence > 4095) {
+            throw new OverflowException(
+            'Sequence overflow (too many IDs generated) - unable to generate IDs for 1 milliseconds'
+            );
+        }
+    }
+
+    /**
      * Get stats.
      *
      * @return GeneratorStatus
      */
     public function status()
     {
-        return new GeneratorStatus($this->machine, $this->lastTime, $this->sequence, (PHP_INT_SIZE === 4));
+        return new GeneratorStatus($this->machine, $this->lastTime,
+            $this->sequence, (PHP_INT_SIZE === 4));
     }
 
     private function mintId32($timestamp, $machine, $sequence)
@@ -193,4 +218,5 @@ class Generator
 
         return $dec;
     }
+
 }
