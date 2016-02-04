@@ -1,5 +1,5 @@
 <?php
-/**
+    /**
      * Cruft flake timer interface.
      * 
      * Implement this if you want some other way to provide time.

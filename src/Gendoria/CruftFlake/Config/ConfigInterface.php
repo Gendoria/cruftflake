@@ -1,5 +1,5 @@
 <?php
-/**
+    /**
      * Cruft flake config interface.
      * 
      * Implement this if you want some other way to configure machines.

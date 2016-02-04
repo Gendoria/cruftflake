@@ -1,5 +1,5 @@
 <?php
-/**
+    /**
      * Fixed configuration.
      * 
      * This is designed to be used where each machine **knows** what its machine
