@@ -16,6 +16,7 @@ $opts    = getopt('p:z:m:');
 $port    = isset($opts['p']) ? $opts['p'] : 5599;
 $zks     = isset($opts['z']) ? $opts['z'] : '127.0.0.1:2181';
 $machine = isset($opts['m']) ? $opts['m'] : null;
+$dsn     = 'tcp://*:'.$port;
 
 $timer = new \Gendoria\CruftFlake\Timer\Timer();
 if ($machine !== NULL) {
@@ -24,6 +25,6 @@ if ($machine !== NULL) {
     $config = new \Gendoria\CruftFlake\Config\ZooKeeperConfig($zks);
 }
 $generator = new \Gendoria\CruftFlake\Generator\Generator($config, $timer);
-$zmqRunner = new \Gendoria\CruftFlake\Zmq\ZmqServer($generator, $port);
+$zmqRunner = new \Gendoria\CruftFlake\Zmq\ZmqServer($generator, $dsn);
 
 $zmqRunner->run();

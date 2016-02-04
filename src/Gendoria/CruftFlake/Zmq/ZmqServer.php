@@ -24,11 +24,11 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     private $generator;
 
     /**
-     * Port.
+     * DSN
      * 
-     * @var int
+     * @var string
      */
-    private $port;
+    private $dsn;
 
     /**
      * Logger.
@@ -43,13 +43,13 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
      * Constructor.
      * 
      * @param @inject Generator $generator
-     * @param integer           $port      Which TCP port to list on, default 5599
+     * @param string            $dsn       Where socket should be bound. Default 'tcp://*:5599'
      * @param bool              $debugMode Debug mode. If set to true, server will only listen for one command, before exiting.
      */
-    public function __construct(Generator $generator, $port = 5599, $debugMode = false)
+    public function __construct(Generator $generator, $dsn = 'tcp://*:5599', $debugMode = false)
     {
         $this->generator = $generator;
-        $this->port = $port;
+        $this->dsn = $dsn;
         $this->logger = new NullLogger();
         $this->debugMode = $debugMode;
     }
@@ -64,7 +64,7 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
      */
     public function run()
     {
-        $receiver = $this->getZmqSocket($this->port);
+        $receiver = $this->getZmqSocket($this->dsn);
         while (true) {
             $msg = $receiver->recv();
             $this->logger->debug('ZMQ server received command: '.$msg);
@@ -133,17 +133,16 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     /**
      * Get ZMQ socket.
      * 
-     * @param int $port Port, on which ZMQ connection should listen.
+     * @param string $dsn DSN, on which ZMQ connection should listen.
      *
      * @return \ZMQSocket
      */
-    protected function getZmqSocket($port)
+    protected function getZmqSocket($dsn)
     {
         $context = new \ZMQContext();
         $receiver = new \ZMQSocket($context, \ZMQ::SOCKET_REP);
-        $bindTo = 'tcp://*:'.$port;
-        $this->logger->debug("Binding to {$bindTo}");
-        $receiver->bind($bindTo);
+        $this->logger->debug("Binding to {$dsn}");
+        $receiver->bind($dsn);
 
         return $receiver;
     }
