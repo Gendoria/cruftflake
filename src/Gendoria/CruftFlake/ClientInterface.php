@@ -25,7 +25,7 @@ interface ClientInterface
     /**
      * Get generator status.
      * 
-     * @return array Generator status.
+     * @return GeneratorStatus Generator status.
      *
      * @see Generator::status()
      */

@@ -7,21 +7,16 @@
  * 
  *  -p      ZeroMQ port to connect to, default 5599
  */
+require __DIR__.'/../vendor/autoload.php';
 
 $opts = getopt('p:');
 $port = isset($opts['p']) ? $opts['p'] : 5599;
 
 $context = new \ZMQContext();
-$socket = new \ZMQSocket($context, \ZMQ::SOCKET_REQ);
-$socket->connect("tcp://127.0.0.1:{$port}");
-$socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);
-
-$socket->send('STATUS');
-$status = $socket->recv();
-$status = json_decode($status, TRUE);
+$socket  = new \ZMQSocket($context, \ZMQ::SOCKET_REQ);
+$cf = new Gendoria\CruftFlake\Zmq\ZmqClient($context, $socket);
+$status = $cf->status();
 
 echo "STATUS\n\n";
-foreach ($status as $k => $v) {
-    echo "$k\t$v\n";
-}
+print_r($status);
 echo "\n";

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to implement CruftFlake.
  *
@@ -8,6 +9,8 @@
 namespace Gendoria\CruftFlake\Zmq;
 
 use Gendoria\CruftFlake\ClientInterface;
+use Gendoria\CruftFlake\GeneratorStatus;
+use RuntimeException;
 
 class ZmqClient implements ClientInterface
 {
@@ -22,15 +25,25 @@ class ZmqClient implements ClientInterface
 
     /**
      * {@inheritdoc}
+     * 
+     * @throws RuntimeException
      */
     public function generateId()
     {
         $this->socket->connect('tcp://127.0.0.1:5599');
         $this->socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);
         $this->socket->send('GEN');
-        $id = $this->socket->recv();
+        $reply = $this->socket->recv();
+        if (empty($reply)) {
+            throw new RuntimeException('Server error - received empty reply.');
+        }
+        $response = json_decode($reply, true);
 
-        return $id;
+        if ($response['code'] != 200) {
+            throw new RuntimeException('Server error: '.$response['message']);
+        }
+
+        return (int) $response['message'];
     }
 
     /**
@@ -41,9 +54,13 @@ class ZmqClient implements ClientInterface
         $this->socket->connect('tcp://127.0.0.1:5599');
         $this->socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 0);
         $this->socket->send('STATUS');
-        $status = $this->socket->recv();
+        $reply = $this->socket->recv();
 
-        return json_decode($status, true);
+        $response = json_decode($reply, true);
+
+        return new GeneratorStatus($response['message']['machine'],
+            $response['message']['lastTime'], $response['message']['sequence'],
+            $response['message']['is32Bit']);
     }
 
     public function __toString()
@@ -51,8 +68,13 @@ class ZmqClient implements ClientInterface
         return $this->generateId();
     }
 
-    public function setTimeout($timeout = -1)
+    /**
+     * Set ZMQ send timeout.
+     * 
+     * @param int $timeout
+     */
+    public function setTimeout($timeout = 5)
     {
-        $this->socket->setSockOpt(\ZMQ::SOCKOPT_SNDTIMEO, 5);
+        $this->socket->setSockOpt(\ZMQ::SOCKOPT_SNDTIMEO, $timeout);
     }
 }

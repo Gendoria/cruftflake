@@ -5,6 +5,10 @@
 A stab at a version of [Twitter Snowflake](https://github.com/twitter/snowflake)
 but in PHP with a simple ZeroMQ interface (rather than Thrift).
 
+This is a serous rewrite of [https://github.com/dvomedia/cruftflake](https://github.com/dvomedia/cruftflake).
+It organizes the code in modules and adds several interfaces, allowing easier extension
+of other server mechanisms.
+
 ## Implementation
 
 This project was motivated by personal curiosity and also my [inability to
@@ -37,22 +41,32 @@ and need to be manually pruned.
 
 Installation via composer:
 
+```json
 	{
     	"require": {
 	        "gendoria/cruftflake": "*"
 		}
 	}
+```
 
-There are two scripts provided for playing about with.
+There are several example scripts provided for playing about with.
+Both require previous composer update.
 
 1. The generator (the server)
-
-    ./examples/cruftflake.php
-
-2. A client that will generate N IDs and dump to STDOUT
-
+    ```shell
+        ./examples/server.php
+    ```
+2. A client, that will generate N IDs and dump to STDOUT
+    ```shell
     ./examples/client.php -n 100
+    ```
+3. A client, that will ask server for generator status
+    ```shell
+    ./examples/status.php
+    ```
 
+For client examples to work, server example has to be be running.
+    
 ## Dependencies
 
 * ZeroMQ

@@ -65,27 +65,37 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     public function run()
     {
         $receiver = $this->getZmqSocket($this->port);
+        $response = array(
+            'code' => 200,
+            'message' => '',
+        );
         while (true) {
             $msg = $receiver->recv();
             $this->logger->debug('ZMQ server received command: '.$msg);
             switch ($msg) {
                 case 'GEN':
                     try {
-                        $response = $this->generator->generate();
+                        $response['message'] = $this->generator->generate();
                     } catch (Exception $e) {
                         $this->logger->error('Generator error: '.$e->getMessage(), array($e, $this));
-                        $response = 'ERROR';
+                        $response = array(
+                            'code' => 500,
+                            'message' => 'ERROR',
+                        );
                     }
                     break;
                 case 'STATUS':
-                    $response = json_encode($this->generator->status());
+                    $response['message'] = $this->generator->status();
                     break;
                 default:
                     $this->logger->debug('Unknown command received: '.$msg);
-                    $response = 'UNKNOWN COMMAND';
+                    $response = array(
+                        'code' => 404,
+                        'message' => 'UNKNOWN COMMAND',
+                    );
                     break;
             }
-            $receiver->send($response);
+            $receiver->send(json_encode($response));
             if ($this->debugMode) {
                 break;
             }

@@ -10,18 +10,12 @@
  *  -m      Specify a particular machine ID
  */
 
+require __DIR__.'/../vendor/autoload.php';
+
 $opts    = getopt('p:z:m:');
 $port    = isset($opts['p']) ? $opts['p'] : 5599;
 $zks     = isset($opts['z']) ? $opts['z'] : '127.0.0.1:2181';
 $machine = isset($opts['m']) ? $opts['m'] : null;
-
-// Autoload the class
-spl_autoload_register(function ($class) {
-    $filename = __DIR__ . '/../src/' .  str_replace('\\', '/', $class) . '.php';
-	if (file_exists($filename)) {
-		require $filename;
-	}
-});
 
 $timer = new \Gendoria\CruftFlake\Timer\Timer();
 if ($machine !== NULL) {

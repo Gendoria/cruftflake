@@ -152,21 +152,11 @@ class Generator
     /**
      * Get stats.
      *
-     * @return array Status array.
-     *               Status fields: 
-     *               * 'machine' - current machine ID
-     *               * 'lastTime' - generator timestamp of last ID generation (converted with epoch)
-     *               * 'sequence' - current sequence
-     *               * 'is32Bit' - true, if PHP works in 32-bit mode
+     * @return GeneratorStatus
      */
     public function status()
     {
-        return array(
-            'machine' => $this->machine,
-            'lastTime' => $this->lastTime,
-            'sequence' => $this->sequence,
-            'is32Bit' => (PHP_INT_SIZE === 4),
-            );
+        return new GeneratorStatus($this->machine, $this->lastTime, $this->sequence, (PHP_INT_SIZE === 4));
     }
 
     private function mintId32($timestamp, $machine, $sequence)
