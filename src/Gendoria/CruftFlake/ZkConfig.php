@@ -17,7 +17,7 @@
  * @author @davegardnerisme
  */
 
-namespace Davegardnerisme\CruftFlake;
+namespace Gendoria\CruftFlake;
 
 class ZkConfig implements ConfigInterface
 {

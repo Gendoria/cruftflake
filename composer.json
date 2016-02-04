@@ -1,19 +1,47 @@
 {
-    "name": "dvomedia/cruftflake",
+    "name": "gendoria/cruftflake",
     "type": "application",
     "description": "CruftFlake - a stab at a version of Twitter Snowflake but in PHP with a simple ZeroMQ interface.",
-    "keywords": ["cruftflake"],
-    "homepage": "https://github.com/davegardnerisme/cruftflake",
-    "version": "1.0.0",
+    "keywords": [
+        "cruftflake"
+    ],
+    "homepage": "https://github.com/gendoria/cruftflake",
     "license": "MIT",
     "authors": [
         {
+            "name": "Dave Gardner",
+            "email": "dave@davegardner.me.uk",
+            "role": "Initial author"
+        },
+        {
             "name": "Davegardnerisme",
-            "email": "davegardnerisme@me.com"
+            "email": "davegardnerisme@me.com",
+            "role": "Initial author"
+        },
+        {
+            "name": "Gendoria",
+            "email": "gendoria@gendoria.pl",
+            "role": "owner"
+        },
+        {
+            "name": "Tomasz Struczyński",
+            "email": "t.struczynski@gmail.com",
+            "role": "developer"
         }
     ],
     "autoload": {
-        "psr-0": { "Davegardnerisme\\CruftFlake": "src" }
+        "psr-0": {
+            "Gendoria\\CruftFlake": "src"
+        }
+    },
+    "require": {
+        "php": ">=5.3.0",
+        "ext-zmq": "*"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     },
     "minimum-stability": "dev"
 }

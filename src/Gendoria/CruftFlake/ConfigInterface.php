@@ -7,7 +7,7 @@
  * @author @davegardnerisme
  */
 
-namespace Davegardnerisme\CruftFlake;
+namespace Gendoria\CruftFlake;
 
 interface ConfigInterface
 {

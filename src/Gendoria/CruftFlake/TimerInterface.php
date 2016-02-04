@@ -1,13 +1,15 @@
 <?php
 /**
- * Cruft flake timer
+ * Cruft flake timer interface
+ * 
+ * Implement this if you want some other way to provide time.
  * 
  * @author @davegardnerisme
  */
 
-namespace Davegardnerisme\CruftFlake;
+namespace Gendoria\CruftFlake;
 
-class Timer implements TimerInterface
+interface TimerInterface
 {
     /**
      * Get unix timestamp to millisecond accuracy
@@ -16,8 +18,5 @@ class Timer implements TimerInterface
      * 
      * @return integer
      */
-    public function getUnixTimestamp()
-    {
-        return floor(microtime(TRUE) * 1000);
-    }
+    public function getUnixTimestamp();
 }

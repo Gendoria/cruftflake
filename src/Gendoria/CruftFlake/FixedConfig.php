@@ -9,7 +9,7 @@
  * @author @davegardnerisme
  */
 
-namespace Davegardnerisme\CruftFlake;
+namespace Gendoria\CruftFlake;
 
 class FixedConfig implements ConfigInterface
 {

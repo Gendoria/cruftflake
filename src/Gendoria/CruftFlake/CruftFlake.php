@@ -5,7 +5,7 @@
  * @author @bobbyjason
  */
 
-namespace Davegardnerisme\CruftFlake;
+namespace Gendoria\CruftFlake;
 
 class CruftFlake
 {

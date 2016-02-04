@@ -9,10 +9,10 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->timer = $this->getMockBuilder('\Davegardnerisme\CruftFlake\TimerInterface')
+        $this->timer = $this->getMockBuilder('\Gendoria\CruftFlake\TimerInterface')
                             ->disableOriginalConstructor()
                             ->getMock();
-        $this->config = $this->getMockBuilder('\Davegardnerisme\CruftFlake\ConfigInterface')
+        $this->config = $this->getMockBuilder('\Gendoria\CruftFlake\ConfigInterface')
                             ->disableOriginalConstructor()
                             ->getMock();
     }
@@ -22,7 +22,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->config->expects($this->once())
                      ->method('getMachine')
                      ->will($this->returnValue($this->machineId));
-        return new \Davegardnerisme\CruftFlake\Generator($this->config, $this->timer);
+        return new \Gendoria\CruftFlake\Generator($this->config, $this->timer);
     }
     
     private function assertId($id)
@@ -41,7 +41,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testConstructs()
     {
         $cf = $this->buildSystemUnderTest();
-        $this->assertInstanceOf('\Davegardnerisme\CruftFlake\Generator', $cf);
+        $this->assertInstanceOf('\Gendoria\CruftFlake\Generator', $cf);
     }
     
     public function testFailsWithBadMachineIdString()
@@ -76,7 +76,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->machineId = 1023;
         $cf = $this->buildSystemUnderTest();
-        $this->assertInstanceOf('\Davegardnerisme\CruftFlake\Generator', $cf);
+        $this->assertInstanceOf('\Gendoria\CruftFlake\Generator', $cf);
     }
     
     public function testGenerate()
