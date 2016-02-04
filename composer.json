@@ -40,7 +40,6 @@
         "psr/log": "~1.0"        
     },
     "require-dev": {
-        "fabpot/php-cs-fixer": "*"
     },
     "extra": {
         "branch-alias": {
