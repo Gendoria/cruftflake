@@ -6,5 +6,5 @@ $finder = Symfony\CS\Finder\DefaultFinder::create()
 
 return Symfony\CS\Config\Config::create()
     ->level(Symfony\CS\FixerInterface::SYMFONY_LEVEL)
-    ->fixers(array('-phpdoc_no_empty_return'))
+    ->fixers(array('-phpdoc_no_empty_return', 'header_comment', 'phpdoc_order'))
     ->finder($finder);

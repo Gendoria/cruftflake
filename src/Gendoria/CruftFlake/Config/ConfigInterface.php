@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cruft flake config interface.
  * 

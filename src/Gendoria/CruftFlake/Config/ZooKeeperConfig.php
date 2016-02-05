@@ -85,9 +85,9 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
     /**
      * Get machine identifier.
      *
+     * @throws RuntimeException Thrown, when obtaining machine ID has failed.
      * @return int Should be a 10-bit int (decimal 0 to 1023)
      *
-     * @throws RuntimeException Thrown, when obtaining machine ID has failed.
      */
     public function getMachine()
     {
@@ -154,9 +154,9 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
      * @param array $children
      * @param array $machineInfo
      *
+     * @throws RuntimeException Thrown, when creation of machine ID has failed.
      * @return int Machine ID.
      *
-     * @throws RuntimeException Thrown, when creation of machine ID has failed.
      */
     private function createMachineInfo(array $children, array $machineInfo)
     {
