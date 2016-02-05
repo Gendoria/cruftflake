@@ -41,6 +41,13 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
      * @var \Zookeeper
      */
     private $zk;
+    
+    /**
+     * Process ID for a multi-process-single-machine setup.
+     * 
+     * @var integer
+     */
+    private $procesId = 1;    
 
     /**
      * Logger.
@@ -54,10 +61,13 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
      *
      * @param string          $hostnames A comma separated list of hostnames (including
      *                                   port)
+     * @param integer           $processId If you want to run multiple server processes on a single machine, 
+     *                                     you have to provide each one an unique ID,
+     *                                     so the zookeeper knows, which machine ID belongs to which process.
      * @param string          $zkPath    The ZK path we look to find other machines under
      * @param LoggerInterface $logger    Logger class
      */
-    public function __construct($hostnames, $zkPath = '/cruftflake', LoggerInterface $logger = null)
+    public function __construct($hostnames, $processId = 1, $zkPath = '/cruftflake', LoggerInterface $logger = null)
     {
         if (!class_exists('\Zookeeper')) {
             $this->logger->critical('Zookeeper not present');
@@ -65,6 +75,7 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
             'ZooKeeper extension not installed. Try hitting PECL.'
             );
         }
+        $this->procesId = $processId;
         $this->zk = new \Zookeeper($hostnames);
         $this->parentPath = $zkPath;
         if ($logger) {
@@ -78,6 +89,7 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
      * Get machine identifier.
      *
      * @return int Should be a 10-bit int (decimal 0 to 1023)
+     * @throws RuntimeException Thrown, when obtaining machine ID has failed.
      */
     public function getMachine()
     {
@@ -90,16 +102,54 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
 
         // get current machine list
         $children = $this->zk->getChildren($this->parentPath);
+        
+        //Find existing machine info
         foreach ($children as $child) {
             $info = $this->zk->get("{$this->parentPath}/$child");
             $info = json_decode($info, true);
-            if (isset($info['macAddress']) && $info['macAddress'] === $machineInfo['macAddress']) {
+            if ($this->compareMachineInfo($info, $machineInfo)) {
                 $machineId = (int) $child;
+                break; //We don't have to check further
             }
         }
+        
+        //Machine info not found, attempt to create one
+        if ($machineId === null) {
+            $machineId = $this->createMachineInfo($children, $machineInfo);
+        }
 
+        $this->logger->debug('Obtained machine ID '.$machineId.' through ZooKeeper configuration');
+
+        return (int) $machineId;
+    }
+    
+    /**
+     * Compare found machine information with expected values.
+     * 
+     * @param array $found
+     * @param array $expected
+     * @return boolean
+     */
+    private function compareMachineInfo(array $found, array $expected)
+    {
+        if (!isset($found['macAddress']) || !isset($found['processId'])) {
+            return false;
+        }
+        return ($found['macAddress'] === $expected['macAddress'] && $found['processId'] === $expected['processId']);
+    }
+    
+    /**
+     * Attempt to claim and create new machine ID in Zookeeper.
+     * 
+     * @param array $children
+     * @param array $machineInfo
+     * @return integer Machine ID.
+     * @throws RuntimeException Thrown, when creation of machine ID has failed.
+     */
+    private function createMachineInfo(array $children, array $machineInfo)
+    {
         // find an unused machine number
-        for ($i = 0; $i < 1024, $machineId === null; ++$i) {
+        for ($i = 0; $i < 1024; ++$i) {
             $machineNode = $this->machineToNode($i);
             if (in_array($machineNode, $children)) {
                 continue; // already used
@@ -115,21 +165,13 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
                 ))
             );
             if ($created !== null) {
-                $machineId = $i;
-                break;
+                return $i;
             }
         }
-
-        if ($machineId === null) {
-            $this->logger->critical('Cannot locate and claim a free machine ID via ZK',
-                array($this));
-            throw new RuntimeException(
-            'Cannot locate and claim a free machine ID via ZK'
-            );
-        }
-        $this->logger->debug('Obtained machine ID '.$machineId.' through ZooKeeper configuration');
-
-        return (int) $machineId;
+        
+        //Creating machine ID failed, throw an error
+        $this->logger->critical('Cannot locate and claim a free machine ID via ZK', array($this));
+        throw new RuntimeException('Cannot locate and claim a free machine ID via ZK');
     }
 
     /**
@@ -163,6 +205,7 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
             'Unable to identify machine mac address and hostname'
             );
         }
+        $info['processId'] = $this->procesId;
 
         return $info;
     }
