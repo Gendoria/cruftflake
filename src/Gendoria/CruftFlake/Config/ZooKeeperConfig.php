@@ -68,6 +68,11 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
     public function __construct($hostnames, $processId = 1, $zkPath = '/cruftflake',
         LoggerInterface $logger = null)
     {
+        if ($logger) {
+            $this->logger = $logger;
+        } else {
+            $this->logger = new NullLogger();
+        }
         if (!class_exists('\Zookeeper')) {
             $this->logger->critical('Zookeeper not present');
             throw new BadMethodCallException('ZooKeeper extension not installed. Try hitting PECL.');
@@ -75,19 +80,14 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
         $this->procesId = $processId;
         $this->zk = new \Zookeeper($hostnames);
         $this->parentPath = $zkPath;
-        if ($logger) {
-            $this->logger = $logger;
-        } else {
-            $this->logger = new NullLogger();
-        }
     }
 
     /**
      * Get machine identifier.
      *
      * @throws RuntimeException Thrown, when obtaining machine ID has failed.
-     * @return int Should be a 10-bit int (decimal 0 to 1023)
      *
+     * @return int Should be a 10-bit int (decimal 0 to 1023)
      */
     public function getMachine()
     {
@@ -155,8 +155,8 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
      * @param array $machineInfo
      *
      * @throws RuntimeException Thrown, when creation of machine ID has failed.
-     * @return int Machine ID.
      *
+     * @return int Machine ID.
      */
     private function createMachineInfo(array $children, array $machineInfo)
     {
