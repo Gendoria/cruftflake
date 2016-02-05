@@ -24,7 +24,7 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     private $generator;
 
     /**
-     * DSN
+     * DSN.
      * 
      * @var string
      */
@@ -36,7 +36,7 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
      * @var LoggerInterface
      */
     private $logger;
-    
+
     private $debugMode = false;
 
     /**
