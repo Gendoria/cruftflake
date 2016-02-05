@@ -3,6 +3,8 @@
 [![Build Status](https://img.shields.io/travis/Gendoria/cruftflake/master.svg)](https://travis-ci.org/Gendoria/cruftflake)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/Gendoria/cruftflake.svg)](https://scrutinizer-ci.com/g/Gendoria/cruftflake/?branch=master)
 [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/Gendoria/cruftflake.svg)](https://scrutinizer-ci.com/g/Gendoria/cruftflake/?branch=master)
+[![Downloads](https://img.shields.io/packagist/dt/gendoria/cruftflake.svg)](https://packagist.org/packages/gendoria/cruftflake)
+[![Latest Stable Version](https://img.shields.io/packagist/v/gendoria/cruftflake.svg)](https://packagist.org/packages/gendoria/cruftflake)
 
 A stab at a version of [Twitter Snowflake](https://github.com/twitter/snowflake)
 but in PHP with a simple ZeroMQ interface (rather than Thrift).
