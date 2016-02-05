@@ -91,6 +91,13 @@ class Generator
     private $lastTime = null;
 
     /**
+     * Config.
+     * 
+     * @var ConfigInterface
+     */
+    private $config;
+
+    /**
      * Constructor.
      * 
      * @param @inject ConfigInterface $config
@@ -98,6 +105,7 @@ class Generator
      */
     public function __construct(ConfigInterface $config, TimerInterface $timer)
     {
+        $this->config = $config;
         $this->machine = $config->getMachine();
         if (!is_int($this->machine) || $this->machine < 0 || $this->machine > 1023) {
             throw new InvalidArgumentException(
@@ -192,6 +200,22 @@ class Generator
     {
         return new GeneratorStatus($this->machine, $this->lastTime,
             $this->sequence, (PHP_INT_SIZE === 4));
+    }
+
+    /**
+     * Perform configuration heartbeat.
+     * 
+     * This refreshes the configuration and may eventually result in obtaining new machine ID.
+     * It may be usefull, when we want to perform garbage collection for stalled machine IDs
+     * in some configuration mechanisms.
+     */
+    public function heartbeat()
+    {
+        if ($this->config->heartbeat()) {
+            $this->machine = $this->config->getMachine();
+            //Just to be sure, sleep 1 microsecond to reset sequence
+            usleep(1);
+        }
     }
 
     private function mintId32($timestamp, $machine, $sequence)

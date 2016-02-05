@@ -11,7 +11,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
 {
     public function testGenerate()
     {
-        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('generate'), array(), '', false);
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('generate', 'heartbeat'), array(), '', false);
         $generator->expects($this->once())
             ->method('generate')
             ->will($this->returnValue(10));
@@ -37,7 +37,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
     
     public function testGenerateException()
     {
-        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('generate'), array(), '', false);
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('generate', 'heartbeat'), array(), '', false);
         $generator->expects($this->once())
             ->method('generate')
             ->will($this->throwException(new Exception()));
@@ -63,7 +63,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
     
     public function testStatus()
     {
-        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status'), array(), '', false);
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status', 'heartbeat'), array(), '', false);
         $generatorStatus = new Gendoria\CruftFlake\Generator\GeneratorStatus(1, 1, 1, true);
         $generator->expects($this->once())
             ->method('status')
@@ -90,7 +90,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
     
     public function testUnknownCommand()
     {
-        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status'), array(), '', false);
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status', 'heartbeat'), array(), '', false);
 
         $socket = $this->getMock('ZMQSocket', array('recv', 'send'), array(), '', false);
         $socket->expects($this->once())

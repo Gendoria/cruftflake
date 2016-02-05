@@ -122,6 +122,16 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
     }
 
     /**
+     * Periodically re-syncs with zookeeper, to obtain new machine ID, if necessary.
+     * 
+     * {@inheritdoc}
+     */
+    public function heartbeat()
+    {
+        return false;
+    }
+
+    /**
      * Compare found machine information with expected values.
      * 
      * @param array $found
@@ -179,7 +189,7 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
     /**
      * Get mac address and hostname.
      *
-     * @return array "hostname","processId" keys
+     * @return array "hostname","processId", "time" keys
      */
     private function getMachineInfo()
     {
@@ -191,6 +201,7 @@ class ZooKeeperConfig implements ConfigInterface, LoggerAwareInterface
             throw new RuntimeException('Unable to identify machine hostname');
         }
         $info['processId'] = $this->procesId;
+        $info['time'] = (int) floor(microtime(true) * 1000);
 
         return $info;
     }

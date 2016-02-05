@@ -17,4 +17,11 @@ interface ConfigInterface
      * @return int Should be a 10-bit int (decimal 0 to 1023)
      */
     public function getMachine();
+
+    /**
+     * Configuration heartbeat. 
+     * 
+     * @return bool True, if configuration data had been changed during heartbeat.
+     */
+    public function heartbeat();
 }

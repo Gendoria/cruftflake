@@ -60,6 +60,16 @@ class FixedConfig implements ConfigInterface, LoggerAwareInterface
     }
 
     /**
+     * {@inheritdoc}
+     * 
+     * This function will always return false, as fixed config does not resync machine ID.
+     */
+    public function heartbeat()
+    {
+        return false;
+    }
+
+    /**
      * Set logger.
      * 
      * @param LoggerInterface $logger

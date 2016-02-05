@@ -17,7 +17,6 @@ use Psr\Log\NullLogger;
 
 class ZmqServer implements ServerInterface, LoggerAwareInterface
 {
-
     /**
      * Cruft flake generator.
      * 
@@ -68,9 +67,10 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
         $receiver = $this->getZmqSocket($this->dsn);
         while (true) {
             $msg = $receiver->recv();
-            $this->logger->debug('ZMQ server received command: ' . $msg);
+            $this->logger->debug('ZMQ server received command: '.$msg);
             $response = $this->runCommand($msg);
             $receiver->send(json_encode($response));
+            $this->generator->heartbeat();
             if ($this->debugMode) {
                 break;
             }
@@ -85,7 +85,8 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
             case 'STATUS':
                 return $this->commandStatus();
             default:
-                $this->logger->debug('Unknown command received: ' . $msg);
+                $this->logger->debug('Unknown command received: '.$msg);
+
                 return $this->createResponse('UNKNOWN COMMAND', 404);
         }
     }
@@ -100,7 +101,7 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
         try {
             $response = $this->createResponse($this->generator->generate());
         } catch (Exception $e) {
-            $this->logger->error('Generator error: ' . $e->getMessage(), array($e, $this));
+            $this->logger->error('Generator error: '.$e->getMessage(), array($e, $this));
             $response = $this->createResponse('ERROR', 500);
         }
 
@@ -154,5 +155,4 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     {
         $this->logger = $logger;
     }
-
 }

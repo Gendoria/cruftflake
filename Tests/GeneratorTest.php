@@ -49,7 +49,22 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         return $generator;
     }
     
-    
+    /**
+     * Get generator for normal tests.
+     * 
+     * @return Generator
+     */
+    private function buildSystemUnderTestHeartbeat($newMachineId)
+    {
+        $this->config->expects($this->exactly(2))
+                     ->method('getMachine')
+                     ->will($this->onConsecutiveCalls($this->machineId, $newMachineId));
+        $this->config->expects($this->once())
+                     ->method('heartbeat')
+                     ->will($this->returnValue(true));
+        return new Generator($this->config, $this->timer);
+    }
+        
     private function assertId($id)
     {
         $this->assertTrue(is_string($id));
@@ -328,5 +343,24 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertId($id2);
         $this->assertReallyNotEquals($id1, $id2);
         $this->assertEquals('9223372036854771712', $id1);
+    }
+    
+    public function testHeartbeat()
+    {
+        $this->machineId = 1;
+        $this->timer->expects($this->any())
+                    ->method('getUnixTimestamp')
+                    ->will($this->returnValue(1325376000000));
+        $cf = $this->buildSystemUnderTestHeartbeat(2);
+        
+        //Test. First ID, heartbeat changing machine ID to 2, second ID
+        $id1 = $cf->generate();
+        $cf->heartbeat();
+        $id2 = $cf->generate();
+        
+        $expectedId1 = $value = (0 << 22) | (1 << 12) | 0; //timestamp 0, machine 1, sequence 0
+        $expectedId2 = $value = (0 << 22) | (2 << 12) | 1; //timestamp 0, machine 2, sequence 1
+        $this->assertEquals($expectedId1, $id1);
+        $this->assertEquals($expectedId2, $id2);
     }
 }
