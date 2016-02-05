@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ZeroMQ interface for cruftflake.
  * 
@@ -16,6 +17,7 @@ use Psr\Log\NullLogger;
 
 class ZmqServer implements ServerInterface, LoggerAwareInterface
 {
+
     /**
      * Cruft flake generator.
      * 
@@ -36,7 +38,6 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
      * @var LoggerInterface
      */
     private $logger;
-
     private $debugMode = false;
 
     /**
@@ -67,23 +68,25 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
         $receiver = $this->getZmqSocket($this->dsn);
         while (true) {
             $msg = $receiver->recv();
-            $this->logger->debug('ZMQ server received command: '.$msg);
-            switch ($msg) {
-                case 'GEN':
-                    $response = $this->commandGenerate();
-                    break;
-                case 'STATUS':
-                    $response = $this->commandStatus();
-                    break;
-                default:
-                    $this->logger->debug('Unknown command received: '.$msg);
-                    $response = $this->createResponse('UNKNOWN COMMAND', 404);
-                    break;
-            }
+            $this->logger->debug('ZMQ server received command: ' . $msg);
+            $response = $this->runCommand($msg);
             $receiver->send(json_encode($response));
             if ($this->debugMode) {
                 break;
             }
+        }
+    }
+
+    private function runCommand($msg)
+    {
+        switch ($msg) {
+            case 'GEN':
+                return $this->commandGenerate();
+            case 'STATUS':
+                return $this->commandStatus();
+            default:
+                $this->logger->debug('Unknown command received: ' . $msg);
+                return $this->createResponse('UNKNOWN COMMAND', 404);
         }
     }
 
@@ -97,7 +100,7 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
         try {
             $response = $this->createResponse($this->generator->generate());
         } catch (Exception $e) {
-            $this->logger->error('Generator error: '.$e->getMessage(), array($e, $this));
+            $this->logger->error('Generator error: ' . $e->getMessage(), array($e, $this));
             $response = $this->createResponse('ERROR', 500);
         }
 
@@ -151,4 +154,5 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
     {
         $this->logger = $logger;
     }
+
 }
