@@ -166,10 +166,10 @@ class ConsulConfig implements ConfigInterface
             if ($currentValue['Key'] == $this->kvPrefix) {
                 continue;
             } elseif ($currentValue['Key'] == $this->sessionId) {
-                return base64_decode($currentValue['Value']);
+                return (int)base64_decode($currentValue['Value']);
             }
             else {
-                $usedIds[] = base64_decode($currentValue['Value']);
+                $usedIds[] = (int)base64_decode($currentValue['Value']);
             }
         }
         for ($k = 0; $k < 1024; $k++) {

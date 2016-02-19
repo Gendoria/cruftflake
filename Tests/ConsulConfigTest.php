@@ -59,6 +59,10 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValueMap(array(
                 array('/kv/'.$kvPrefix.'?recurse', array(
                     array(
+                        'Key' => $kvPrefix,
+                        'Value' => $sessionId,
+                    ),
+                    array(
                         'Key' => 'testold',
                         'Value' => base64_encode(0),
                     ),
