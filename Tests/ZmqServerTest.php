@@ -37,6 +37,40 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
         $server->run();
     }
     
+    /**
+     * Test ticket generation after some sleep - to allow heartbeat operation to be called.
+     */
+    public function testGenerateAfterTimeout()
+    {
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('generate', 'heartbeat'), array(), '', false);
+        $generator->expects($this->once())
+            ->method('generate')
+            ->will($this->returnValue(10));
+        $generator->expects($this->once())
+            ->method('heartbeat');
+
+        $socket = $this->getMock('ZMQSocket', array('recv', 'send'), array(), '', false);
+        $socket->expects($this->once())
+            ->method('recv')
+            ->willReturnCallback(function() {
+                sleep(6);
+                return 'GEN';
+        });
+        $socket->expects($this->once())
+            ->method('send')
+            ->with('{"code":200,"message":10}');
+        
+        $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
+        
+        $server->expects($this->once())
+            ->method('getZmqSocket')
+            ->with(5599)
+            ->will($this->returnValue($socket));        
+        
+        /* @var $server ZmqServer */
+        $server->run();
+    }    
+    
     public function testGenerateException()
     {
         $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('generate', 'heartbeat'), array(), '', false);
