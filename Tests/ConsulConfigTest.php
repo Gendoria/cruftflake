@@ -211,4 +211,36 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
         }
         $config->heartbeat();
     }    
+    
+    public function testHeartbeatSessionRenevalAndCreationUnsuccessfullNoUpdateNeeded()
+    {
+        $kvPrefix = 'test/';
+        $sessionId = 'test';
+        $curl = $this->getMock('\Gendoria\CruftFlake\Config\ConsulCurl', array(), array(''));
+        $curl->expects($this->any())
+            ->method('performPutRequest')
+            ->will($this->returnCallback(function($url) use ($sessionId, $kvPrefix) {
+                static $invCount = 0;
+                if ($url == '/kv/'.$kvPrefix.'?acquire='.$sessionId) {
+                    return true;
+                } elseif($url == '/session/renew') {
+                    return false;
+                } elseif ($url == '/session/create') {
+                    if ($invCount == 0) {
+                        $invCount++;
+                        return array('ID' => $sessionId);
+                    } else {
+                        return null;
+                    }
+                }
+            }));
+        
+        try {
+            $config = new ConsulConfig($curl, 10, $kvPrefix);
+            sleep(5);
+        } catch (RuntimeException $e) {
+            $this->fail('Failed too quickly on '.$e->getMessage());
+        }
+        $this->assertFalse($config->heartbeat());
+    }    
 }
