@@ -51,7 +51,14 @@ class ConsulConfig implements ConfigInterface
      */
     private $machineId;
     
-    function __construct(ConsulCurl $curl, $sessionTTL = 600, $kvPrefix = self::DEFAULT_KV_PREFIX)
+    /**
+     * Class constructor.
+     * 
+     * @param ConsulCurl $curl
+     * @param integer $sessionTTL
+     * @param string $kvPrefix
+     */
+    public function __construct(ConsulCurl $curl, $sessionTTL = 600, $kvPrefix = self::DEFAULT_KV_PREFIX)
     {
         $this->curl = $curl;
         $this->kvPrefix = $kvPrefix;
@@ -92,7 +99,7 @@ class ConsulConfig implements ConfigInterface
     public function heartbeat()
     {
         //If we have last successfull check recently new, we don't have to do anything
-        if ($this->lastSuccessfullCheck && time() - $this->lastSuccessfullCheck < $this->sessionTTL / 2 ) {
+        if ($this->lastSuccessfullCheck !== null && time() - $this->lastSuccessfullCheck < $this->sessionTTL / 2 ) {
             return false;
         }
         //If session reneval succeedes, update last successfull check.
@@ -109,19 +116,25 @@ class ConsulConfig implements ConfigInterface
         } catch (RuntimeException $e) {
             //We could not create new session. We can work for some time in 'detached' mode,
             //but if our TTL time runs out, we have to throw an exception.
-            if (!$this->lastSuccessfullCheck || time() - $this->lastSuccessfullCheck >= $this->sessionTTL) {
+            if ($this->lastSuccessfullCheck === null || time() - $this->lastSuccessfullCheck >= $this->sessionTTL) {
                 throw $e;
             }
             return false;
         }
     }
     
+    /**
+     * Return machine ID from consul queries.
+     * 
+     * @return integer
+     * @throws RuntimeException
+     */
     private function acquireMachineId()
     {
         //Check, if we don't have existing value for the session
         $currentValue = $this->curl->performGetRequest('/kv/'.$this->kvPrefix.$this->sessionId);
         if (!empty($currentValue['Value'])) {
-            return base64_decode($currentValue['Value']);
+            return (int)base64_decode($currentValue['Value']);
         }
         //Lock main key to block concurrent checks
         $this->lockKey();
@@ -136,9 +149,16 @@ class ConsulConfig implements ConfigInterface
         }
         //Release the lock on the main key and return machine ID.
         $this->releaseKey();
-        return $machineId;
+        return (int)$machineId;
     }
     
+    /**
+     * Try to fetch machine ID.
+     * 
+     * @param array $currentValues
+     * @return integer
+     * @throws RuntimeException
+     */
     private function computePossibleMachineId(array $currentValues)
     {
         $usedIds = array();
