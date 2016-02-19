@@ -81,6 +81,78 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $machine);
     }
     
+    public function testGetMachineIdExisting()
+    {
+        $kvPrefix = 'test/';
+        $sessionId = 'test';
+        $sessionCreatePayload = $payload = array(
+            'TTL' => '600s',
+            "Behavior" => "delete",
+            'LockDelay' => '300s',
+        );
+        $curl = $this->getMock('\Gendoria\CruftFlake\Config\ConsulCurl', array(), array(''));
+        $curl->expects($this->any())
+            ->method('performPutRequest')
+            ->will($this->returnValueMap(array(
+                array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 10, true),
+            )));
+        $curl->expects($this->any())
+            ->method('performGetRequest')
+            ->will($this->returnValueMap(array(
+                array('/kv/'.$kvPrefix.$sessionId, array(
+                    'Key' => $sessionId,
+                    'Value' => base64_encode(10),
+                )),
+                array('/kv/'.$kvPrefix.'?recurse', array(
+                    array(
+                        'Key' => $kvPrefix,
+                        'Value' => $sessionId,
+                    ),
+                )),
+            )));
+        $config = new ConsulConfig($curl, 600, $kvPrefix);
+        $machine = $config->getMachine();
+        $this->assertEquals(10, $machine);
+    }    
+    
+    public function testGetMachineIdInCurrent()
+    {
+        $kvPrefix = 'test/';
+        $sessionId = 'test';
+        $sessionCreatePayload = $payload = array(
+            'TTL' => '600s',
+            "Behavior" => "delete",
+            'LockDelay' => '300s',
+        );
+        $curl = $this->getMock('\Gendoria\CruftFlake\Config\ConsulCurl', array(), array(''));
+        $curl->expects($this->any())
+            ->method('performPutRequest')
+            ->will($this->returnValueMap(array(
+                array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 10, true),
+            )));
+        $curl->expects($this->any())
+            ->method('performGetRequest')
+            ->will($this->returnValueMap(array(
+                array('/kv/'.$kvPrefix.'?recurse', array(
+                    array(
+                        'Key' => $kvPrefix,
+                        'Value' => $sessionId,
+                    ),
+                    array(
+                        'Key' => 'test',
+                        'Value' => base64_encode(10),
+                    ),
+                )),
+            )));
+        $config = new ConsulConfig($curl, 600, $kvPrefix);
+        $machine = $config->getMachine();
+        $this->assertEquals(10, $machine);
+    }    
+    
     public function testGetMachineIdImpossible()
     {
         $this->setExpectedException('RuntimeException', 'Cannot acquire machine ID');
