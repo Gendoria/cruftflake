@@ -11,7 +11,7 @@ but in PHP with a simple ZeroMQ interface (rather than Thrift).
 
 This is a serous rewrite of [https://github.com/dvomedia/cruftflake](https://github.com/dvomedia/cruftflake).
 It organizes the code in modules and adds several interfaces, allowing easier extension
-of other server mechanisms.
+of other server and configuration mechanisms.
 
 ## Implementation
 
