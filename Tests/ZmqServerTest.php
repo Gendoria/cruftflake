@@ -193,6 +193,5 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
         $socket = $socketMethod->invoke($server, 'tcp://*:5599');
         $this->assertInstanceOf('\ZmqSocket', $socket);
         $this->assertEquals(array('connect' => array(), 'bind' => array('tcp://*:5599')), $socket->getEndpoints());
-        $socket->unbind('tcp://*:5599');
     }
 }
