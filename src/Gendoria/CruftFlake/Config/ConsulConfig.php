@@ -180,6 +180,9 @@ class ConsulConfig implements ConfigInterface
         throw new RuntimeException("Cannot acquire machine ID - all machine IDs are used up");
     }
     
+    /**
+     * Lock master key.
+     */
     private function lockKey()
     {
         //try to acquire the lock on prefix during whole operation.
@@ -191,11 +194,19 @@ class ConsulConfig implements ConfigInterface
         } while (!$acquired);
     }
     
+    /**
+     * Release master key.
+     */
     private function releaseKey()
     {
         $this->curl->performPutRequest('/kv/'.$this->kvPrefix.'?release='.$this->sessionId, $this->sessionId);
     }
 
+    /**
+     * Create new session.
+     * 
+     * @throws RuntimeException
+     */
     private function createSession()
     {
         $url ='/session/create';
@@ -212,6 +223,9 @@ class ConsulConfig implements ConfigInterface
         $this->sessionId = $returnData['ID'];
     }
     
+    /**
+     * Destroy session.
+     */
     private function destroySession()
     {
         if ($this->sessionId) {
