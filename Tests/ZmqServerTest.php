@@ -1,6 +1,8 @@
 <?php
 
-use Gendoria\CruftFlake\Server\ZmqServer;
+use Gendoria\CruftFlake\Generator\GeneratorStatus;
+use Gendoria\CruftFlake\Zmq\ZmqServer;
+use Psr\Log\NullLogger;
 
 /**
  * Test the ZMQ server.
@@ -64,7 +66,7 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
     public function testStatus()
     {
         $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status', 'heartbeat'), array(), '', false);
-        $generatorStatus = new Gendoria\CruftFlake\Generator\GeneratorStatus(1, 1, 1, true);
+        $generatorStatus = new GeneratorStatus(1, 1, 1, true);
         $generator->expects($this->once())
             ->method('status')
             ->will($this->returnValue($generatorStatus));
@@ -133,5 +135,30 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
         
         /* @var $server ZmqServer */
         $server->run();
-    }    
+    }
+    
+    public function testSetLogger()
+    {
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status', 'heartbeat'), array(), '', false);
+        $server = new ZmqServer($generator, 5599, true);
+        $logger = new NullLogger();
+        $server->setLogger($logger);
+        $refl = new ReflectionObject($server);
+        $loggerProp = $refl->getProperty('logger');
+        $loggerProp->setAccessible(true);
+        $this->assertSame($logger, $loggerProp->getValue($server));
+    }
+    
+    public function testGetSmqSocket()
+    {
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status', 'heartbeat'), array(), '', false);
+        $server = new ZmqServer($generator, 5599, true);
+        $refl = new ReflectionObject($server);
+        $socketMethod = $refl->getMethod('getZmqSocket');
+        $socketMethod->setAccessible(true);
+        $socket = $socketMethod->invoke($server, 'tcp://*:5599');
+        $this->assertInstanceOf('\ZmqSocket', $socket);
+        $this->assertEquals(array('connect' => array(), 'bind' => array('tcp://*:5599')), $socket->getEndpoints());
+        $socket->unbind('tcp://*:5599');
+    }
 }
