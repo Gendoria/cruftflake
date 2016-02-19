@@ -109,5 +109,29 @@ class ZmqServerTest extends PHPUnit_Framework_TestCase
         
         /* @var $server ZmqServer */
         $server->run();
+    }
+    
+    public function testHeartBeat()
+    {
+        $generator = $this->getMock('\Gendoria\CruftFlake\Generator\Generator', array('status', 'heartbeat'), array(), '', false);
+        $generator->expects($this->once())
+            ->method('heartbeat');
+
+        $socket = $this->getMock('ZMQSocket', array('recv', 'send'), array(), '', false);
+        $socket->expects($this->once())
+            ->method('recv')
+            ->willReturn(false);
+        $socket->expects($this->never())
+            ->method('send');
+        
+        $server = $this->getMock('\Gendoria\CruftFlake\Zmq\ZmqServer', array('getZmqSocket'), array($generator, 5599, true));
+        
+        $server->expects($this->once())
+            ->method('getZmqSocket')
+            ->with(5599)
+            ->will($this->returnValue($socket));        
+        
+        /* @var $server ZmqServer */
+        $server->run();
     }    
 }

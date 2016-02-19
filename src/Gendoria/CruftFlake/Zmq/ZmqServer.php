@@ -14,6 +14,9 @@ use Gendoria\CruftFlake\ServerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use ZMQ;
+use ZMQContext;
+use ZMQSocket;
 
 class ZmqServer implements ServerInterface, LoggerAwareInterface
 {
@@ -67,16 +70,18 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
         $receiver = $this->getZmqSocket($this->dsn);
         while (true) {
             $msg = $receiver->recv();
-            $this->logger->debug('ZMQ server received command: '.$msg);
-            $response = $this->runCommand($msg);
-            $receiver->send(json_encode($response));
+            if ($msg !== false) {
+                $this->logger->debug('ZMQ server received command: '.$msg);
+                $response = $this->runCommand($msg);
+                $receiver->send(json_encode($response));
+            }
             $this->generator->heartbeat();
             if ($this->debugMode) {
                 break;
             }
         }
     }
-
+    
     private function runCommand($msg)
     {
         switch ($msg) {
@@ -143,8 +148,10 @@ class ZmqServer implements ServerInterface, LoggerAwareInterface
      */
     protected function getZmqSocket($dsn)
     {
-        $context = new \ZMQContext();
-        $receiver = new \ZMQSocket($context, \ZMQ::SOCKET_REP);
+        $context = new ZMQContext();
+        $receiver = new ZMQSocket($context, ZMQ::SOCKET_REP);
+        //Receive timeout is set to 5s, to allow heartbeat operations to take place.
+        $receiver->setSockOpt(ZMQ::SOCKOPT_RCVTIMEO, 5000);
         $this->logger->debug("Binding to {$dsn}");
         $receiver->bind($dsn);
 
