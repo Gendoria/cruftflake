@@ -3,7 +3,7 @@
 namespace Gendoria\CruftFlake\Generator;
 
 /**
- * Description of GeneratorStatus.
+ * Data Transfer Object containing generator status information.
  *
  * @author Tomasz Struczyński <tomasz.struczynski@isobar.com>
  */
