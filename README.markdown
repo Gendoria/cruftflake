@@ -15,9 +15,6 @@ of other server and configuration mechanisms.
 
 ## Implementation
 
-This project was motivated by personal curiosity and also my [inability to
-get Twitter's project to build](https://github.com/twitter/snowflake/issues/8).
-
 The implementation copies Twitter - generating 64 bit IDs.
 
   - time - 41 bits
@@ -77,6 +74,7 @@ For client examples to work, server example has to be be running.
 ## Dependencies
 
 * ZeroMQ
-* ZooKeeper (if you want to use centralized configuration)
+* ZooKeeper (if you want to use ZooKeeper centralized configuration)
+* Doctrine DBAL >= 2.3.0 (if you want Doctrine DBAL centralized configuration)
 
 Composer requires php-zmq module installed, but currently does not require zookeper.
