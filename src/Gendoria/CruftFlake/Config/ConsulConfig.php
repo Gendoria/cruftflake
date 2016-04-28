@@ -11,12 +11,17 @@ namespace Gendoria\CruftFlake\Config;
 use RuntimeException;
 
 /**
- * Description of ConsulConfig
+ * Configuration using consul instance.
  *
  * @author Tomasz Struczyński <tomasz.struczynski@isobar.com>
  */
 class ConsulConfig implements ConfigInterface
 {
+    /**
+     * Default KV prefix on Consul.
+     * 
+     * @var string
+     */
     const DEFAULT_KV_PREFIX = 'service/CruftFlake/machines/';
     
     /**
@@ -26,6 +31,11 @@ class ConsulConfig implements ConfigInterface
      */
     private $curl;
     
+    /**
+     * Consul KV prefix.
+     * 
+     * @var string
+     */
     private $kvPrefix = self::DEFAULT_KV_PREFIX;
     
     /**
@@ -35,6 +45,11 @@ class ConsulConfig implements ConfigInterface
      */
     private $sessionId = "";
     
+    /**
+     * Session TTL.
+     * 
+     * @var integer
+     */
     private $sessionTTL;
     
     /**
@@ -81,7 +96,7 @@ class ConsulConfig implements ConfigInterface
      */
     public function getMachine()
     {
-        if (!$this->machineId) {
+        if ($this->machineId === null) {
             $this->machineId = $this->acquireMachineId();
         }
         return $this->machineId;
@@ -145,7 +160,7 @@ class ConsulConfig implements ConfigInterface
         }
         $machineId = $this->computePossibleMachineId($currentValues);
         if (!$this->curl->performPutRequest('/kv/'.$this->kvPrefix.$this->sessionId.'?acquire='.$this->sessionId, $machineId)) {
-            throw new RuntimeException("Could not register machine ID on consul.");
+            throw new RuntimeException("Could not register machine ID on consul");
         }
         //Release the lock on the main key and return machine ID.
         $this->releaseKey();
@@ -186,11 +201,13 @@ class ConsulConfig implements ConfigInterface
     private function lockKey()
     {
         //try to acquire the lock on prefix during whole operation.
+        $tryCount=0;
         do {
-            $acquired = $this->curl->performPutRequest('/kv/'.$this->kvPrefix.'?acquire='.$this->sessionId, $this->sessionId);
+            $acquired = $this->curl->performPutRequest('/kv/'.$this->kvPrefix.'?acquire='.$this->sessionId."&flags=".$tryCount, $this->sessionId);
             if (!$acquired) {
                 sleep(1);
             }
+            $tryCount++;
         } while (!$acquired);
     }
     

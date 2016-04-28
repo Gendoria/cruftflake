@@ -1,9 +1,12 @@
 <?php
 
+namespace Gendoria\CruftFlake;
+
 use Gendoria\CruftFlake\Config\FixedConfig;
 use Gendoria\CruftFlake\Generator\Generator;
 use Gendoria\CruftFlake\Local\LocalClient;
 use Gendoria\CruftFlake\Timer\Timer;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Description of LocalClientTest

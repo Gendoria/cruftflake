@@ -1,8 +1,13 @@
 <?php
 
-use Gendoria\CruftFlake\Generator\Generator;
+namespace Gendoria\CruftFlake;
 
-class GeneratorTest extends \PHPUnit_Framework_TestCase
+use Gendoria\CruftFlake\Generator\Generator;
+use OverflowException;
+use PHPUnit_Framework_TestCase;
+use UnexpectedValueException;
+
+class GeneratorTest extends PHPUnit_Framework_TestCase
 {
     private $machineId = 1;
     

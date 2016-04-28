@@ -1,12 +1,10 @@
 <?php
 
-use Gendoria\CruftFlake\Config\ConsulConfig;
+namespace Gendoria\CruftFlake\Config;
 
-/**
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+use Gendoria\CruftFlake\Config\ConsulConfig;
+use PHPUnit_Framework_TestCase;
+use RuntimeException;
 
 /**
  * Description of ConsulConfigTest
@@ -29,13 +27,59 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
                 array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 0, true),
             )));
         $config = new ConsulConfig($curl, 600, $kvPrefix);
         $machine = $config->getMachine();
         $this->assertEquals(0, $machine);
     }
+    
+    public function testGetMachineIdException()
+    {
+        $this->setExpectedException('\RuntimeException', 'Could not register machine ID on consul');
+        $kvPrefix = 'test/';
+        $sessionId = 'test';
+        $sessionCreatePayload = $payload = array(
+            'TTL' => '600s',
+            "Behavior" => "delete",
+            'LockDelay' => '300s',
+        );
+        $curl = $this->getMock('\Gendoria\CruftFlake\Config\ConsulCurl', array(), array(''));
+        $curl->expects($this->any())
+            ->method('performPutRequest')
+            ->will($this->returnValueMap(array(
+                array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
+                array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 0, false),
+            )));
+        $config = new ConsulConfig($curl, 600, $kvPrefix);
+        $machine = $config->getMachine();
+        $this->assertEquals(0, $machine);
+    }
+    
+    public function testGetMachineIdConsuleTimeout()
+    {
+        $kvPrefix = 'test/';
+        $sessionId = 'test';
+        $sessionCreatePayload = $payload = array(
+            'TTL' => '600s',
+            "Behavior" => "delete",
+            'LockDelay' => '300s',
+        );
+        $curl = $this->getMock('\Gendoria\CruftFlake\Config\ConsulCurl', array(), array(''));
+        $curl->expects($this->any())
+            ->method('performPutRequest')
+            ->will($this->returnValueMap(array(
+                array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId."&flags=0", $sessionId, false),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId."&flags=1", $sessionId, true),
+                array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 0, true),
+            )));
+        $config = new ConsulConfig($curl, 600, $kvPrefix);
+        $machine = $config->getMachine();
+        $this->assertEquals(0, $machine);
+    }    
     
     public function testGetMachineIdOnExistingCurrent()
     {
@@ -51,7 +95,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
                 array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 2, true),
             )));
         $curl->expects($this->any())
@@ -95,7 +139,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
                 array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 10, true),
             )));
         $curl->expects($this->any())
@@ -131,7 +175,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
                 array('/kv/'.$kvPrefix.$sessionId.'?acquire='.$sessionId, 10, true),
             )));
         $curl->expects($this->any())
@@ -168,7 +212,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
             )));
         
         $filledValues = array_map(function($val) {
@@ -201,7 +245,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
             )));
         
         $config = new ConsulConfig($curl, 200, $kvPrefix);
@@ -222,7 +266,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
                 array("/session/renew/".$sessionId, null, true)
             )));
         
@@ -244,7 +288,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnValueMap(array(
                 array('/session/create', json_encode($sessionCreatePayload), array('ID' => $sessionId)),
-                array('/kv/'.$kvPrefix.'?acquire='.$sessionId, $sessionId, true),
+                array('/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0', $sessionId, true),
                 array("/session/renew/".$sessionId, null, false)
             )));
         
@@ -262,7 +306,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnCallback(function($url) use ($sessionId, $kvPrefix) {
                 static $invCount = 0;
-                if ($url == '/kv/'.$kvPrefix.'?acquire='.$sessionId) {
+                if ($url == '/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0') {
                     return true;
                 } elseif($url == '/session/renew') {
                     return false;
@@ -293,7 +337,7 @@ class ConsulConfigTest extends PHPUnit_Framework_TestCase
             ->method('performPutRequest')
             ->will($this->returnCallback(function($url) use ($sessionId, $kvPrefix) {
                 static $invCount = 0;
-                if ($url == '/kv/'.$kvPrefix.'?acquire='.$sessionId) {
+                if ($url == '/kv/'.$kvPrefix.'?acquire='.$sessionId.'&flags=0') {
                     return true;
                 } elseif($url == '/session/renew') {
                     return false;

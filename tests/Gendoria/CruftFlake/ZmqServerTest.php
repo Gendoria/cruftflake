@@ -1,8 +1,13 @@
 <?php
 
+namespace Gendoria\CruftFlake;
+
+use Exception;
 use Gendoria\CruftFlake\Generator\GeneratorStatus;
 use Gendoria\CruftFlake\Zmq\ZmqServer;
+use PHPUnit_Framework_TestCase;
 use Psr\Log\NullLogger;
+use ReflectionObject;
 
 /**
  * Test the ZMQ server.
