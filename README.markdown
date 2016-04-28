@@ -6,10 +6,10 @@
 [![Downloads](https://img.shields.io/packagist/dt/gendoria/cruftflake.svg)](https://packagist.org/packages/gendoria/cruftflake)
 [![Latest Stable Version](https://img.shields.io/packagist/v/gendoria/cruftflake.svg)](https://packagist.org/packages/gendoria/cruftflake)
 
-A stab at a version of [Twitter Snowflake](https://github.com/twitter/snowflake)
+Unique ID generator based on [Twitter Snowflake](https://github.com/twitter/snowflake), 
 but in PHP with a simple ZeroMQ interface (rather than Thrift).
 
-This is a serous rewrite of [https://github.com/dvomedia/cruftflake](https://github.com/dvomedia/cruftflake).
+This is a rewrite of [dvomedia/cruftflake](https://github.com/dvomedia/cruftflake).
 It organizes the code in modules and adds several interfaces, allowing easier extension
 of other server and configuration mechanisms.
 
