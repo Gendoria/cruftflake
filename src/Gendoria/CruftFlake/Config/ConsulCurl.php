@@ -19,7 +19,7 @@ class ConsulCurl
     
     private $apiPrefix = "/v1";
     
-    function __construct($consulBaseUrl, $apiPrefix = "/v1")
+    public function __construct($consulBaseUrl, $apiPrefix = "/v1")
     {
         $this->consulBaseUrl = $consulBaseUrl;
         $this->apiPrefix = $apiPrefix;
