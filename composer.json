@@ -1,7 +1,7 @@
 {
     "name": "gendoria/cruftflake",
     "type": "application",
-    "description": "CruftFlake - a stab at a version of Twitter Snowflake but in PHP with a simple ZeroMQ interface.",
+    "description": "Unique ID generator based on Twitter Snowflake, but in PHP with a simple ZeroMQ interface.",
     "keywords": [
         "cruftflake"
     ],
