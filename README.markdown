@@ -77,4 +77,4 @@ For client examples to work, server example has to be be running.
 * ZooKeeper (if you want to use ZooKeeper centralized configuration)
 * Doctrine DBAL >= 2.3.0 (if you want Doctrine DBAL centralized configuration)
 
-Composer requires php-zmq module installed, but currently does not require zookeper.
+Composer requires php-zmq module installed.
