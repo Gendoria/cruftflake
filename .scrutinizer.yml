@@ -5,7 +5,7 @@ build:
         before:
             - 'phpunit'
 filter:
-    excluded_paths: [vendor/*, Tests/*, examples/*]
+    excluded_paths: [vendor/*, tests/*, examples/*]
 checks:
     php:
         code_rating: true

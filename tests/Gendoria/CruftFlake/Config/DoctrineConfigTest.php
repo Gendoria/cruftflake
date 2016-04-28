@@ -90,7 +90,7 @@ class DoctrineConfigTest extends PHPUnit_Extensions_Database_TestCase
         $this->assertEquals(1, $conn->getRowCount(DoctrineConfig::DEFAULT_TABLE_NAME), "Inserting failed");
         $config1 = null;
         $this->assertEquals(0, $conn->getRowCount(DoctrineConfig::DEFAULT_TABLE_NAME), "Destroy failed");
-        //Whenb we create new config, it should have ID equals 1.
+        //When we create new config, it should have ID equals 1.
         $config2 = new DoctrineConfig($this->connection);
         $this->assertEquals(0, $config2->getMachine());
         $this->assertEquals(1, $conn->getRowCount(DoctrineConfig::DEFAULT_TABLE_NAME), "Inserting failed");

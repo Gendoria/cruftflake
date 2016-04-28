@@ -64,7 +64,7 @@ class DoctrineConfig implements ConfigInterface
      */
     private $machineId;    
 
-    function __construct(Connection $connection, $sessionTTL = 600, $tableName = self::DEFAULT_TABLE_NAME)
+    public function __construct(Connection $connection, $sessionTTL = 600, $tableName = self::DEFAULT_TABLE_NAME)
     {
         $this->connection = $connection;
         $this->sessionTTL = $sessionTTL;
@@ -169,7 +169,7 @@ class DoctrineConfig implements ConfigInterface
     /**
      * Acquire next ID from database.
      * 
-     * @return boolean|integer
+     * @return integer
      */
     private function acquireDbId()
     {
