@@ -1,9 +1,12 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Doctrine configuration.
+ * 
+ * This is designed to be used where each machine uses Doctrine DBAL backend
+ * to ask and store machine IDs.
+ * 
+ * @author Tomasz Struczyński <t.struczynski@gendoria.pl>
  */
 
 namespace Gendoria\CruftFlake\Config;
